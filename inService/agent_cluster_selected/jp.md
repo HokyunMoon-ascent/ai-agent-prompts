@@ -1,4 +1,4 @@
-<!-- v.0.1.7_cluster_selected_0310.md (updated 2026-03-10) -->
+<!-- v.0.1.7_cluster_selected_JP 기준 갱신 (서비스 배포용). Context Data placeholder는 서비스 런타임 키 {{cluster_csv}} 유지 -->
 
 ## Instructions
 
