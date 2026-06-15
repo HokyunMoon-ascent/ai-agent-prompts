@@ -1,4 +1,4 @@
-<!-- v.0.1.3_system_prompt_KR_0220.md (updated 2026-06-01) -->
+<!-- v.0.1.3_system_prompt_KR_0220.md (updated 2026-02-20) -->
 
 ## Formatting Rules
 

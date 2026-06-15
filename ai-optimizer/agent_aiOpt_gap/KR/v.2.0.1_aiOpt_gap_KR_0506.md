@@ -1,4 +1,4 @@
-<!-- v.2.0.1_aiOpt_gap_KR_0506.md (updated 2026-06-01) -->
+<!-- v.2.0.1_aiOpt_gap_KR_0506.md (updated 2026-05-06) -->
 
 첫 문구에 'ai opt gap analyst 출력' 이라고 가장먼저 노출
 

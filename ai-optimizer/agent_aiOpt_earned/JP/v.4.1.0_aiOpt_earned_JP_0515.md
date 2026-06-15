@@ -1,4 +1,4 @@
-<!-- v.4.1.0_aiOpt_earned_JP_0515.md (updated 2026-06-01) -->
+<!-- v.4.1.0_aiOpt_earned_JP_0515.md (updated 2026-05-15) -->
 
 ## 役割
 

@@ -1,4 +1,4 @@
-<!-- v.0.2.2_agent_persona_specialist_KR_0220.md (updated 2026-06-01) -->
+<!-- v.0.2.2_agent_persona_specialist_KR_0220.md (updated 2026-02-20) -->
 
 위는 일군의 사람들이 어떤 목적이나 고민을 해결하기 위해 연이어 검색한 검색어 시퀀스 데이터에서 확인한 `%(query)s`(검색어)들을 묶어놓은 검색어 클러스터 정보입니다.
 

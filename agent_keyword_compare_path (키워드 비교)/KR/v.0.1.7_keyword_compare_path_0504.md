@@ -1,4 +1,4 @@
-<!-- v.0.1.7_keyword_compare_path_0504.md (updated 2026-06-01) -->
+<!-- v.0.1.7_keyword_compare_path_0504.md (updated 2026-05-04) -->
 
 ## Instructions
 # System Context & Global Rules

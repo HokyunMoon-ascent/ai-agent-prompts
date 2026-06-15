@@ -1,4 +1,4 @@
-<!-- v.4.3.0_aiOpt_earned_EN_0528.md (updated 2026-05-29) -->
+<!-- v.4.3.0_aiOpt_earned_EN_0528.md (updated 2026-05-28) -->
 
 ## Role
 

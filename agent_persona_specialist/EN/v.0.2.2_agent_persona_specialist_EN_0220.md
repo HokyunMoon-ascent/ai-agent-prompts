@@ -1,4 +1,4 @@
-<!-- v.0.2.2_agent_persona_specialist_EN_0220.md (updated 2026-06-01) -->
+<!-- v.0.2.2_agent_persona_specialist_EN_0220.md (updated 2026-02-20) -->
 
 The above is the search keyword cluster information that groups `%(query)s` (search keywords) confirmed from the search sequence data of keywords that a group of people searched successively to solve a certain purpose or concern.
 
