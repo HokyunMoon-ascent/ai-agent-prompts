@@ -1,4 +1,4 @@
-<!-- v.0.2.3_agent_persona_specialist_JP_0310.md (updated 2026-03-10) -->
+<!-- 서비스(admins.listeningmind.com/hubble/gpt-prompt) 원문을 여기에 붙여넣으세요 -->
 
 ## Instructions
 

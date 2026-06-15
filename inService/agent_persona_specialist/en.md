@@ -1,4 +1,6 @@
-<!-- v.0.2.2_agent_persona_specialist_EN_0220.md (updated 2026-02-20) -->
+<!-- 서비스(admins.listeningmind.com/hubble/gpt-prompt) 원문을 여기에 붙여넣으세요 -->
+
+## Instructions
 
 The above is the search keyword cluster information that groups `%(query)s` (search keywords) confirmed from the search sequence data of keywords that a group of people searched successively to solve a certain purpose or concern.
 
