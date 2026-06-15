@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ai-optimizer v.0.2.6 — 4 에이전트 입출력 구조</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --panel: #ffffff;
+    --ink: #0f1115;
+    --ink-2: #404652;
+    --ink-3: #6b7280;
+    --line: #e4e7eb;
+    --line-2: #c8cdd5;
+    --accent: #0ea5e9;
+    --gap:     #ef4444;
+    --owned:   #3b82f6;
+    --earned:  #10b981;
+    --none:    #a855f7;
+    --danger:  #dc2626;
+    --warn:    #eab308;
+    --safe:    #0ea5e9;
+    --slot-bg: #f3f4f6;
+    --slot-bg-2: #e9ecf1;
+    --code-bg: #f6f7f9;
+    --shadow: 0 1px 2px rgba(15,17,21,0.04), 0 4px 16px rgba(15,17,21,0.06);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, .mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ============ HEADER ============ */
+  header.page-head {
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 32px;
+  }
+  .title h1 {
+    margin: 0 0 6px; font-size: 28px; font-weight: 900; letter-spacing: -0.01em;
+  }
+  .title .sub { color: var(--ink-3); font-size: 13.5px; }
+  .title .sub code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; color: var(--ink-2); }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink-2);
+    text-decoration: none; transition: transform .12s ease;
+  }
+  .chip:hover { transform: translateY(-1px); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chip.gap    .dot { background: var(--gap); }
+  .chip.owned  .dot { background: var(--owned); }
+  .chip.earned .dot { background: var(--earned); }
+  .chip.none   .dot { background: var(--none); }
+
+  /* ============ TOC ============ */
+  nav.toc {
+    display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 12px 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    margin-bottom: 36px; font-size: 13px;
+  }
+  nav.toc a { color: var(--ink-2); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+  nav.toc .sep { color: var(--line-2); }
+
+  /* ============ SECTION ============ */
+  section { margin: 0 0 56px; }
+  section > h2 {
+    font-size: 20px; font-weight: 900; letter-spacing: -0.005em; margin: 0 0 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  section > h2 .num {
+    display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center;
+    background: var(--ink); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    border-radius: 6px;
+  }
+  section > .lead { color: var(--ink-3); font-size: 13.5px; margin: 0 0 20px; }
+
+  /* ============ DIAGRAM ============ */
+  .diagram {
+    display: grid; grid-template-columns: 1fr auto 1.4fr auto 1fr; gap: 12px;
+    align-items: stretch; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 24px; box-shadow: var(--shadow);
+  }
+  .col-label {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: 1fr auto 1.4fr auto 1fr; gap: 12px;
+    margin-bottom: -4px; font-size: 11.5px; font-weight: 700; color: var(--ink-3);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .col-label span { padding-left: 4px; }
+  .col-label .arrow-cell { visibility: hidden; }
+
+  .slots, .agents, .outputs { display: flex; flex-direction: column; gap: 10px; }
+
+  .slot {
+    background: var(--slot-bg); border: 1px solid var(--line);
+    padding: 10px 12px; border-radius: 8px;
+  }
+  .slot .name { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .slot .desc { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; line-height: 1.4; }
+  .slot.dim { background: transparent; border-style: dashed; }
+  .slot.dim .name { color: var(--ink-3); }
+
+  .agent-card {
+    position: relative;
+    padding: 12px 14px; border-radius: 10px; background: var(--panel);
+    border: 1px solid var(--line); border-left-width: 4px;
+  }
+  .agent-card .head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .agent-card .name { font-weight: 900; font-size: 14.5px; }
+  .agent-card .tag { font-size: 11px; color: var(--ink-3); }
+  .agent-card .role { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; }
+  .agent-card .url-req {
+    display: inline-block; margin-top: 6px; font-size: 11px; padding: 2px 8px;
+    border-radius: 999px; background: var(--slot-bg-2); color: var(--ink-2); font-weight: 600;
+  }
+  .agent-card.gap    { border-left-color: var(--gap); }
+  .agent-card.owned  { border-left-color: var(--owned); }
+  .agent-card.earned { border-left-color: var(--earned); }
+  .agent-card.none   { border-left-color: var(--none); background: #faf7ff; }
+
+  .out-box {
+    padding: 10px 12px; border-radius: 8px; background: var(--panel);
+    border: 1px solid var(--line); border-top-width: 3px;
+  }
+  .out-box .head { font-weight: 800; font-size: 13px; margin-bottom: 4px; }
+  .out-box ol { margin: 0; padding-left: 18px; font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+  .out-box.gap    { border-top-color: var(--gap); }
+  .out-box.owned  { border-top-color: var(--owned); }
+  .out-box.earned { border-top-color: var(--earned); }
+  .out-box.none   { border-top-color: var(--none); }
+
+  .arrow-cell {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--line-2); font-size: 18px;
+  }
+  .arrow { width: 36px; height: 2px; background: var(--line-2); position: relative; }
+  .arrow::after {
+    content: ""; position: absolute; right: -1px; top: -4px;
+    border: 5px solid transparent; border-left-color: var(--line-2);
+  }
+
+  .diagram-note {
+    margin-top: 14px; font-size: 12.5px; color: var(--ink-3); padding: 10px 14px;
+    background: var(--code-bg); border-radius: 8px; border: 1px dashed var(--line);
+  }
+  .diagram-note b { color: var(--ink-2); }
+
+  /* ============ AGENT DETAIL ROWS ============ */
+  .agent-rows { display: grid; gap: 14px; }
+  .agent-row {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; display: grid; grid-template-columns: 200px 1fr; gap: 20px;
+    box-shadow: var(--shadow);
+  }
+  .agent-row .left {
+    border-right: 1px solid var(--line); padding-right: 20px;
+  }
+  .agent-row .left .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px;
+    font-weight: 800; color: #fff; letter-spacing: 0.04em;
+  }
+  .agent-row.gap    .badge { background: var(--gap); }
+  .agent-row.owned  .badge { background: var(--owned); }
+  .agent-row.earned .badge { background: var(--earned); }
+  .agent-row.none   .badge { background: var(--none); }
+  .agent-row .left h3 { margin: 8px 0 4px; font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
+  .agent-row .left .one-line { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; }
+  .agent-row dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; font-size: 13px; }
+  .agent-row dt { color: var(--ink-3); font-size: 12px; font-weight: 600; }
+  .agent-row dd { margin: 0; color: var(--ink-2); }
+  .agent-row dd code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; }
+
+  /* ============ TABLES ============ */
+  table.std {
+    width: 100%; border-collapse: collapse; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    box-shadow: var(--shadow); font-size: 13px;
+  }
+  table.std th, table.std td {
+    padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  table.std th {
+    background: #f4f6f9; font-weight: 700; font-size: 12px; color: var(--ink-2);
+    letter-spacing: 0.02em;
+  }
+  table.std tr:last-child td { border-bottom: none; }
+  table.std td.center { text-align: center; }
+  table.std .pill {
+    display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px;
+    font-weight: 700; color: #fff;
+  }
+  .pill.gap    { background: var(--gap); }
+  .pill.owned  { background: var(--owned); }
+  .pill.earned { background: var(--earned); }
+  .pill.none   { background: var(--none); }
+  table.std tr.except td { background: #fff7ed; }
+
+  /* ============ LABEL SYSTEM ============ */
+  .label-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .label-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .label-card::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  }
+  .label-card.danger::before { background: var(--danger); }
+  .label-card.warn::before   { background: var(--warn); }
+  .label-card.safe::before   { background: var(--safe); }
+  .label-card .ico { font-size: 24px; line-height: 1; }
+  .label-card h4 { margin: 8px 0 4px; font-size: 17px; font-weight: 900; }
+  .label-card .when { font-size: 12.5px; color: var(--ink-3); margin-bottom: 10px; }
+  .label-card .old {
+    font-size: 11.5px; color: var(--ink-3); padding-top: 10px; border-top: 1px dashed var(--line);
+  }
+  .label-card .old s { color: #9aa1ab; }
+
+  /* ============ VOCAB ============ */
+  .vocab-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .vocab-col {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px; box-shadow: var(--shadow);
+  }
+  .vocab-col h4 { margin: 0 0 10px; font-size: 14px; font-weight: 800; }
+  .vocab-col.banned h4 { color: var(--danger); }
+  .vocab-col.allowed h4 { color: var(--earned); }
+  .vocab-list { margin: 0; padding: 0; list-style: none; font-size: 13px; line-height: 1.7; }
+  .vocab-list li { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  .vocab-list li:last-child { border-bottom: none; }
+  .vocab-list .from { color: #94a3b8; text-decoration: line-through; }
+  .vocab-list .to   { color: var(--ink); font-weight: 600; }
+  .vocab-list .arr  { color: var(--line-2); margin: 0 8px; }
+
+  .note-box {
+    margin-top: 16px; padding: 12px 16px; background: #eff8ff; border: 1px solid #bae0fd;
+    border-radius: 10px; font-size: 13px; color: #075985;
+  }
+  .note-box b { color: #0c4a6e; }
+
+  /* ============ TIMELINE ============ */
+  .timeline {
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 0;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 24px 20px; box-shadow: var(--shadow); position: relative;
+  }
+  .tl-node {
+    position: relative; padding: 0 6px; text-align: center;
+  }
+  .tl-node::before {
+    content: ""; position: absolute; top: 18px; left: 50%; right: -50%;
+    height: 2px; background: var(--line);
+  }
+  .tl-node:last-child::before { display: none; }
+  .tl-dot {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--line-2);
+    margin: 11px auto; border: 3px solid var(--panel); box-shadow: 0 0 0 1px var(--line-2);
+    position: relative; z-index: 1;
+  }
+  .tl-node.current .tl-dot {
+    background: var(--gap); box-shadow: 0 0 0 1px var(--gap), 0 0 0 6px rgba(239,68,68,0.15);
+    width: 18px; height: 18px; margin: 9px auto;
+  }
+  .tl-ver { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; }
+  .tl-node.current .tl-ver { color: var(--gap); }
+  .tl-date { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; }
+  .tl-note { font-size: 11px; color: var(--ink-2); margin-top: 8px; line-height: 1.45; min-height: 4em; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  footer code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; color: var(--ink-2); }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .diagram, .col-label { grid-template-columns: 1fr; }
+    .col-label { display: none; }
+    .arrow-cell { transform: rotate(90deg); height: 24px; }
+    .agent-row { grid-template-columns: 1fr; }
+    .agent-row .left { border-right: none; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 14px; }
+    .label-grid, .vocab-grid { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
+    .tl-node::before { display: none; }
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 20px 14px 60px; }
+    .title h1 { font-size: 22px; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .diagram, .agent-row, table.std, .label-card, .vocab-col, .timeline { box-shadow: none; }
+    nav.toc { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header class="page-head">
+    <div class="title">
+      <h1>ai-optimizer <span style="color:var(--gap)">v.0.2.6</span> — 4 에이전트 입출력 구조</h1>
+      <div class="sub">
+        작성일 2026-05-19 · 정본 KR · 출처
+        <code>description/report_0518.md</code>
+      </div>
+    </div>
+    <div class="chip-row">
+      <a class="chip gap"    href="#agent-gap"><span class="dot"></span>gap</a>
+      <a class="chip owned"  href="#agent-owned"><span class="dot"></span>owned</a>
+      <a class="chip earned" href="#agent-earned"><span class="dot"></span>earned</a>
+      <a class="chip none"   href="#agent-none"><span class="dot"></span>noneURL</a>
+    </div>
+  </header>
+
+  <!-- ============ TOC ============ -->
+  <nav class="toc">
+    <a href="#diagram">① 입출력 다이어그램</a><span class="sep">·</span>
+    <a href="#agents">② 에이전트별 상세</a><span class="sep">·</span>
+    <a href="#tables">③ 표 표준</a><span class="sep">·</span>
+    <a href="#labels">④ 우선순위 라벨</a><span class="sep">·</span>
+    <a href="#vocab">⑤ 어휘 규칙</a><span class="sep">·</span>
+    <a href="#timeline">⑥ 버전 타임라인</a>
+  </nav>
+
+  <!-- ============ 1. DIAGRAM ============ -->
+  <section id="diagram">
+    <h2><span class="num">①</span> 핵심 입출력 다이어그램</h2>
+    <p class="lead">공통 ABC 입력 6슬롯 → 4 에이전트 → 표준 출력 섹션의 흐름입니다. noneURL은 자사 URL(A) 없이 B+C만 사용합니다.</p>
+
+    <div class="diagram">
+      <div class="col-label">
+        <span>입력 슬롯 (ABC)</span>
+        <span class="arrow-cell">→</span>
+        <span>4 에이전트</span>
+        <span class="arrow-cell">→</span>
+        <span>출력 섹션</span>
+      </div>
+
+      <!-- LEFT: SLOTS -->
+      <div class="slots">
+        <div class="slot">
+          <div class="name">{{page_content_A}}</div>
+          <div class="desc">A · 자사 페이지 파싱 콘텐츠 (URL 크롤링 → 본문)</div>
+        </div>
+        <div class="slot">
+          <div class="name">{{user_prompt_B}}</div>
+          <div class="desc">B · CEP 기반 AI 검색 프롬프트</div>
+        </div>
+        <div class="slot">
+          <div class="name">{{ai_responses_C}}</div>
+          <div class="desc">C · AI 응답 6건 (GPT 3 + Google AIO 3)</div>
+        </div>
+        <div class="slot dim">
+          <div class="name">{{prev_q}}</div>
+          <div class="desc">세션 컨텍스트 — 이전 질문</div>
+        </div>
+        <div class="slot dim">
+          <div class="name">{{prev_a}}</div>
+          <div class="desc">세션 컨텍스트 — 이전 답변</div>
+        </div>
+        <div class="slot dim">
+          <div class="name">{{user_question}}</div>
+          <div class="desc">세션 컨텍스트 — 현재 질문</div>
+        </div>
+      </div>
+
+      <div class="arrow-cell"><div class="arrow"></div></div>
+
+      <!-- MIDDLE: AGENTS -->
+      <div class="agents">
+        <div class="agent-card gap">
+          <div class="head"><span class="name">gap</span><span class="tag">URL 필수</span></div>
+          <div class="role">자사 페이지(A) ↔ AI 응답(C) 비교로 <b>자사 페이지에 빠진 의미적 영역</b>을 도출</div>
+        </div>
+        <div class="agent-card owned">
+          <div class="head"><span class="name">owned</span><span class="tag">URL 필수</span></div>
+          <div class="role">gap 결과를 받아 <b>자사 페이지에서 보강·신설</b>할 정보구조(H1/H2)를 제안</div>
+        </div>
+        <div class="agent-card earned">
+          <div class="head"><span class="name">earned</span><span class="tag">URL 필수</span></div>
+          <div class="role">gap 결과 중 자사 페이지로 회수 불가능한 영역을 <b>외부 매체·커뮤니티·리뷰어</b> 유도 액션으로 분해</div>
+        </div>
+        <div class="agent-card none">
+          <div class="head"><span class="name">noneURL</span><span class="tag">URL 없음</span></div>
+          <div class="role">자사 URL 없이 <b>AI 응답 자체의 구조·인용 출처</b>를 진단 (URL 사전 단계용)</div>
+        </div>
+      </div>
+
+      <div class="arrow-cell"><div class="arrow"></div></div>
+
+      <!-- RIGHT: OUTPUTS -->
+      <div class="outputs">
+        <div class="out-box gap">
+          <div class="head">gap 출력 (2섹션)</div>
+          <ol>
+            <li>브랜드 노출 분석</li>
+            <li>의미적 갭 매핑</li>
+          </ol>
+        </div>
+        <div class="out-box owned">
+          <div class="head">owned 출력 (1섹션)</div>
+          <ol><li>개선 제안 (IA H1/H2)</li></ol>
+        </div>
+        <div class="out-box earned">
+          <div class="head">earned 출력 (단일 흐름)</div>
+          <ol><li>토픽별 액션 표 + 통합 해설</li></ol>
+        </div>
+        <div class="out-box none">
+          <div class="head">noneURL 출력 (2섹션)</div>
+          <ol>
+            <li>응답 구조 분석</li>
+            <li>브랜드 언급 맥락 및 답변 인용 출처 분석</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-note">
+      <b>흐름 요약</b> — 4 에이전트가 동일한 ABC 입력을 각자 <b>독립적으로</b> 받아 병렬 실행됩니다. URL 모드(gap/owned/earned)는 ABC 모두 사용, noneURL은 A 없이 B+C만 사용합니다. dev_request 명세상 owned는 <code>{{gap_analysis_output}}</code>, earned는 <code>{{gap_findings}}</code> 슬롯이 있으나 현행 운영(answer 파일)은 <b>ABC 직결만 사용</b>합니다 — 즉 gap → owned/earned 자동 파이프라인은 미구현 상태입니다.
+    </div>
+  </section>
+
+  <!-- ============ 2. AGENTS ============ -->
+  <section id="agents">
+    <h2><span class="num">②</span> 에이전트별 상세 카드</h2>
+    <p class="lead">출력 섹션 구조 · 표 컬럼 구성 · 토픽 그룹 카디널리티 (모두 정확히 3개 — A · B · C)</p>
+
+    <div class="agent-rows">
+      <!-- gap -->
+      <div class="agent-row gap" id="agent-gap">
+        <div class="left">
+          <span class="badge">URL 필수</span>
+          <h3>gap</h3>
+          <div class="one-line">자사 페이지(A) ↔ AI 응답(C) 비교로 자사 페이지에 빠진 의미적 영역을 도출</div>
+        </div>
+        <dl>
+          <dt>출력 섹션</dt>
+          <dd><b>2섹션</b> — <code>1) 브랜드 노출 분석</code> · <code>2) 의미적 갭 매핑</code></dd>
+          <dt>§1 표</dt>
+          <dd>➊ 토픽 그룹 정의 / <code>토픽 그룹 · 묶인 세부 토픽 · 자사 대응 액션</code> (3컬럼 · 3행)</dd>
+          <dt>§2 표</dt>
+          <dd>➊ 콘텐츠 갭 표 / <code>토픽 그룹 · 개선 우선 순위 · 해결 전략</code> (3컬럼 · 3행, 라벨 순)</dd>
+          <dt>토픽 그룹</dt>
+          <dd>정확히 <b>3개</b> — A · B · C (§1 ↔ §2 cross-section 동일 라벨)</dd>
+          <dt>통합 해설</dt>
+          <dd>§1 = 500±50자 / §2 = 400±50자 · 메인 불릿 + 근거 · 필요 단서 하위 불릿</dd>
+        </dl>
+      </div>
+
+      <!-- owned -->
+      <div class="agent-row owned" id="agent-owned">
+        <div class="left">
+          <span class="badge">URL 필수</span>
+          <h3>owned</h3>
+          <div class="one-line">gap 결과를 받아 자사 페이지에서 보강·신설할 IA(H1/H2)를 제안</div>
+        </div>
+        <dl>
+          <dt>출력 섹션</dt>
+          <dd><b>1섹션</b> — <code># 개선 제안</code> (분석 개요·갭 진단·인사이트는 사고 단계로만)</dd>
+          <dt>표</dt>
+          <dd>➊ 토픽 그룹 정의 / <code>토픽 그룹 · 개선 우선 순위 · 해결 전략</code> (3컬럼 · 3행)</dd>
+          <dt>토픽 그룹</dt>
+          <dd>정확히 <b>3개</b> — A · B · C · 우선순위 순으로 정렬 (🔴 → 🟡 → 🔵)</dd>
+          <dt>통합 해설</dt>
+          <dd>500±50자 · 묶인 세부 토픽 · IA 제안 · 신규/보강 라벨 하위 불릿</dd>
+          <dt>참고</dt>
+          <dd>"흡수" → "녹여 넣음" · "허브" → "안내 페이지" 어휘 통일</dd>
+        </dl>
+      </div>
+
+      <!-- earned -->
+      <div class="agent-row earned" id="agent-earned">
+        <div class="left">
+          <span class="badge">URL 필수</span>
+          <h3>earned</h3>
+          <div class="one-line">gap 결과 중 자사 페이지로 회수 불가능한 영역을 외부 매체·커뮤니티·리뷰어 유도 액션으로 분해</div>
+        </div>
+        <dl>
+          <dt>출력 섹션</dt>
+          <dd><b>단일 흐름</b> — 토픽별 액션 표 1개 + 통합 해설 (v.0.2.5 in-place 6차에서 2표 → 1표 병합)</dd>
+          <dt>표</dt>
+          <dd>토픽별 액션 / <code>토픽 그룹 · 개선 우선 순위 · 해결 전략</code> (3컬럼 · 3행)</dd>
+          <dt>해결 전략 셀</dt>
+          <dd>(채널·형식) + <b>AI 인용 후보</b> + 동사 한 줄 액션 문장 — <code>외 N</code> 카운트 형식 폐기</dd>
+          <dt>토픽 그룹</dt>
+          <dd>정확히 <b>3개</b> — D. 실증 후기(🔵 안전)는 종합 라인에 자연어 흡수</dd>
+          <dt>분량 가이드</dt>
+          <dd>🔴 위험 그룹은 인용 현황·추천 채널·유도 콘텐츠 3종 하위 불릿 상세, 🟡/🔵는 1줄 처리</dd>
+        </dl>
+      </div>
+
+      <!-- noneURL -->
+      <div class="agent-row none" id="agent-none">
+        <div class="left">
+          <span class="badge">URL 없음</span>
+          <h3>noneURL</h3>
+          <div class="one-line">자사 URL 없이 AI 응답 자체의 구조·인용 출처를 진단 (URL 사전 단계용)</div>
+        </div>
+        <dl>
+          <dt>출력 섹션</dt>
+          <dd><b>2섹션</b> — <code>1) 응답 구조 분석</code> · <code>2) 브랜드 언급 맥락 및 답변 인용 출처 분석</code></dd>
+          <dt>§1 표</dt>
+          <dd>➊ 응답 흐름 요약 / <code>응답 · 본론 (추천 순서·비중)</code> (<b>2컬럼 예외</b> · 응답 수만큼 행)</dd>
+          <dt>§2 표</dt>
+          <dd>➊ 토픽 그룹 정의 / <code>토픽 그룹 · 묶인 세부 토픽 · AI 응답에서 다뤄진 방식</code> (3컬럼 · 3행)</dd>
+          <dt>§2 ➋</dt>
+          <dd>자사 진입 가설 (300자 별도 유지) — 구조적 진입 위치 · 필요 RTB · 외부 매체 유형</dd>
+          <dt>입력</dt>
+          <dd>A 없이 B + C + 세션 컨텍스트 3종만 사용</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. TABLES ============ -->
+  <section id="tables">
+    <h2><span class="num">③</span> 표 표준 — 3컬럼 룰</h2>
+    <p class="lead">4 에이전트의 6개 표 한눈에. noneURL §1만 2컬럼 예외(주황 강조).</p>
+
+    <table class="std">
+      <thead>
+        <tr>
+          <th style="width:14%">에이전트</th>
+          <th style="width:22%">표</th>
+          <th>컬럼 구성</th>
+          <th style="width:12%" class="center">행 수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill gap">gap §1</span></td>
+          <td>➊ 토픽 그룹 정의</td>
+          <td>토픽 그룹 / 묶인 세부 토픽 / 자사 대응 액션</td>
+          <td class="center">3 (위험 격차 순)</td>
+        </tr>
+        <tr>
+          <td><span class="pill gap">gap §2</span></td>
+          <td>➊ 콘텐츠 갭 표</td>
+          <td>토픽 그룹 / 개선 우선 순위 / 해결 전략</td>
+          <td class="center">3 (라벨 순)</td>
+        </tr>
+        <tr>
+          <td><span class="pill earned">earned</span></td>
+          <td>토픽별 액션 (단일)</td>
+          <td>토픽 그룹 / 개선 우선 순위 / 해결 전략</td>
+          <td class="center">3 (라벨 순)</td>
+        </tr>
+        <tr>
+          <td><span class="pill owned">owned</span></td>
+          <td>➊ 토픽 그룹 정의</td>
+          <td>토픽 그룹 / 개선 우선 순위 / 해결 전략</td>
+          <td class="center">3 (라벨 순)</td>
+        </tr>
+        <tr class="except">
+          <td><span class="pill none">noneURL §1</span></td>
+          <td>➊ 응답 흐름 요약</td>
+          <td><b>응답 / 본론 (추천 순서·비중)</b> — 2컬럼 예외</td>
+          <td class="center">응답 수만큼</td>
+        </tr>
+        <tr>
+          <td><span class="pill none">noneURL §2</span></td>
+          <td>➊ 토픽 그룹 정의</td>
+          <td>토픽 그룹 / 묶인 세부 토픽 / AI 응답에서 다뤄진 방식</td>
+          <td class="center">3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-box">
+      <b>토픽 그룹 카디널리티 고정 룰</b> — 4 에이전트 × 3 로케일(KR/JP/EN) 모두 <b>정확히 3개</b>(A · B · C). 잔재 grep <code>4~5|3~5|4–5|3–5|4〜5|3〜5</code> 0건 / gap §1 ↔ §2 동일 라벨 정합 / 라벨 표기 <code>**A. 토픽명**</code>.
+    </div>
+  </section>
+
+  <!-- ============ 4. LABELS ============ -->
+  <section id="labels">
+    <h2><span class="num">④</span> 우선순위 라벨 시스템 — 3단계</h2>
+    <p class="lead">v.0.2.5 이전 2단계(결정적/기회/보강) → v.0.2.6에서 3단계(위험/양호/안전)로 어휘 통일.</p>
+
+    <div class="label-grid">
+      <div class="label-card danger">
+        <div class="ico">🔴</div>
+        <h4>위험</h4>
+        <div class="when">즉시 개선 · 1순위 착수</div>
+        <div class="old">v.0.2.5 이전 → <s>🔴 결정적</s></div>
+      </div>
+      <div class="label-card warn">
+        <div class="ico">🟡</div>
+        <h4>양호</h4>
+        <div class="when">2~3순위 개선</div>
+        <div class="old">v.0.2.5 이전 → <s>🟡 기회</s> · <s>🟡 보강</s></div>
+      </div>
+      <div class="label-card safe">
+        <div class="ico">🔵</div>
+        <h4>안전</h4>
+        <div class="when">보조 점검 · 균형 인용 회수</div>
+        <div class="old">v.0.2.5 이전 → <s>(별도 라벨 없음)</s></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. VOCAB ============ -->
+  <section id="vocab">
+    <h2><span class="num">⑤</span> 어휘 규칙 — 마케터 친화</h2>
+    <p class="lead">출력 본문에서 분야 전문 용어 추방 · 자연어 권장 치환. 위반 시 prompt-verifier가 ERROR.</p>
+
+    <div class="vocab-grid">
+      <div class="vocab-col banned">
+        <h4>🚫 추방 어휘 (출력 본문 등장 금지)</h4>
+        <ul class="vocab-list">
+          <li><span class="from">허브</span></li>
+          <li><span class="from">흡수 방식 · 흡수 가능성 · 흡수</span></li>
+          <li><span class="from">신뢰 통제권</span></li>
+          <li><span class="from">통증 RTB · RTB · KBF</span></li>
+          <li><span class="from">비대칭 구도 · 무게중심</span></li>
+          <li><span class="from">대표 해답 자리 · 조건부 대안 자리</span></li>
+          <li><span class="from">1순위를 정당화</span></li>
+          <li><span class="from">PDP · FAQ · 매트릭스 · 사분면 · 4축 · 5분류 · 프레임</span></li>
+          <li><span class="from">효익 진술 · 결정 직전 인용원 · 구조적 약점</span></li>
+          <li><span class="from">균형 인용 신호 · 정합성 · consensus · variance · 진영</span></li>
+        </ul>
+      </div>
+      <div class="vocab-col allowed">
+        <h4>✓ 권장 치환</h4>
+        <ul class="vocab-list">
+          <li><span class="from">허브</span><span class="arr">→</span><span class="to">안내 페이지</span></li>
+          <li><span class="from">흡수 방식</span><span class="arr">→</span><span class="to">개선 방법</span></li>
+          <li><span class="from">흡수 가능성</span><span class="arr">→</span><span class="to">개선 가능성</span></li>
+          <li><span class="from">흡수 (동사)</span><span class="arr">→</span><span class="to">녹여 넣음</span></li>
+          <li><span class="from">신뢰 통제권</span><span class="arr">→</span><span class="to">외부 페이지를 인용의 증거로 사용</span></li>
+          <li><span class="from">대표 해답 자리</span><span class="arr">→</span><span class="to">주요 해결책으로 안내</span></li>
+          <li><span class="from">조건부 대안 자리</span><span class="arr">→</span><span class="to">그 외 제품으로는 X 등장</span></li>
+          <li><span class="from">1순위를 정당화</span><span class="arr">→</span><span class="to">주요 근거로 안내</span></li>
+          <li><span class="from">통증 RTB를 떠받치다</span><span class="arr">→</span><span class="to">커뮤니티 후기를 인용</span></li>
+          <li><span class="from">비대칭 구도</span><span class="arr">→</span><span class="to">특정 제품에 편중</span></li>
+          <li><span class="from">자사 페이지가 비어 있는 토픽</span><span class="arr">→</span><span class="to">자사 페이지에서 부족한 토픽</span></li>
+          <li><span class="from">무게중심</span><span class="arr">→</span><span class="to">주된 내용</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <b>"그룹" → "토픽 그룹" 통일</b> — 본문·표 헤더·표 셀(<code>(그룹명)</code> → <code>(토픽 그룹명)</code>)·해설·체크리스트 일괄 치환. <b>보존 허용</b>: 동사형 "그룹화 / グループ化 / grouping", 라벨+그룹 결합어("🔴 위험 그룹 / 🟡 良好グループ / 🔴 Risk groups").
+    </div>
+  </section>
+
+  <!-- ============ 6. TIMELINE ============ -->
+  <section id="timeline">
+    <h2><span class="num">⑥</span> 버전 타임라인 — v.0.1.0 → v.0.2.6</h2>
+    <p class="lead">압축·표준화·어휘 통일로 이어진 8단계 진화. 현행은 v.0.2.6.</p>
+
+    <div class="timeline">
+      <div class="tl-node">
+        <div class="tl-ver">v.0.1.0</div>
+        <div class="tl-date">2026-04-30</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">4 에이전트 골격 + 페르소나 1문장 + ABC 입력 슬롯 + 4섹션 출력</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.0</div>
+        <div class="tl-date">2026-05-04</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">3로케일(KR/JP/EN) 본격 분기 · :::accordion + ➊➋➌ + :k[..] 도입</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.1</div>
+        <div class="tl-date">2026-05-06</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">불릿 리스트 기반 4섹션 안정화 · 모바일 가독성 한계 노출</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.2</div>
+        <div class="tl-date">2026-05-14</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">4섹션 구조 공통 표준화 · 중복 분산 문제 누적</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.3</div>
+        <div class="tl-date">2026-05-15</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">4섹션 → 1~2섹션 대대적 압축 · 마케터 친화 정중체 도입</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.4</div>
+        <div class="tl-date">2026-05-15</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">통합 해설 400자 압축 · 중간 해설 제거 · ➍ 부족 신호 흡수</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-ver">v.0.2.5</div>
+        <div class="tl-date">2026-05-15→18</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">3컬럼 표 표준 완성 · 알파벳 라벨 A·B·C 도입 (in-place 7차)</div>
+      </div>
+      <div class="tl-node current">
+        <div class="tl-ver">v.0.2.6</div>
+        <div class="tl-date">2026-05-18</div>
+        <div class="tl-dot"></div>
+        <div class="tl-note">어휘·라벨·표 헤더 통일 · 🔴위험/🟡양호/🔵안전 3단계 · 토픽 그룹 3개 고정</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div>
+      <b>출처</b> &nbsp;
+      <code>description/report_0518.md</code> ·
+      <code>description/history.md</code> ·
+      <code>description/0518/description.md</code>
+    </div>
+    <div>
+      <b>검증</b> &nbsp;
+      <code>/prompt-verify</code> · <code>/prompt-sync</code>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>클러스터파인더 — 단일 키워드가 이중 분석으로 폭주하는 이유 (2026-06-01)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #fbfafb;
+    --surface: #ffffff;
+    --ink-900: #1a1725;
+    --ink-700: #3d3a46;
+    --ink-500: #7f7a8d;
+    --ink-300: #c6c2ce;
+    --line: #eae8ee;
+    --brand: #786ebe;
+    --brand-soft: #efecfb;
+    --good: #00ad98;
+    --warn: #bfa055;
+    --bad: #fb2c36;
+    --bad-soft: #ffe5e7;
+    --owned: #6f91ef;
+    --earned: #f8cf68;
+    --paid: #c6c2ce;
+    --radius-lg: 18px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 2px rgba(28,22,60,.04), 0 8px 24px rgba(28,22,60,.06);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink-900); font-family: "Noto Sans KR", system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { line-height: 1.6; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 48px 24px 120px; }
+  code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.92em; }
+
+  /* Hero */
+  .hero { padding: 56px 48px; background: linear-gradient(135deg, #2b2452 0%, #4d3f8a 60%, var(--brand) 100%); color: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; inset: auto -120px -180px auto; width: 420px; height: 420px; background: radial-gradient(circle, rgba(255,255,255,.12), transparent 70%); }
+  .hero .tag { display: inline-block; padding: 4px 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.15); border-radius: 999px; margin-bottom: 18px; }
+  .hero h1 { font-size: 34px; margin: 0 0 8px; font-weight: 900; letter-spacing: -0.01em; line-height: 1.25; }
+  .hero .sub { font-size: 15px; opacity: .82; margin-bottom: 28px; }
+  .hero .verdict { display: flex; gap: 14px; align-items: flex-start; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 20px 22px; border-radius: var(--radius); position: relative; z-index: 1; }
+  .hero .verdict .k { font-weight: 700; font-size: 22px; line-height: 1.4; }
+  .hero .verdict .k b { background: linear-gradient(transparent 55%, #f8cf68 55% 95%, transparent 95%); padding: 0 2px; color: #fff; }
+  .hero .meta { display: flex; gap: 18px; font-size: 12px; opacity: .7; margin-top: 20px; letter-spacing: .02em; flex-wrap: wrap; }
+
+  /* Sections */
+  section { margin-top: 56px; }
+  .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--brand); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 10px; }
+  .eyebrow .num { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; }
+  h2 { font-size: 26px; font-weight: 900; letter-spacing: -0.01em; margin: 0 0 8px; color: var(--ink-900); }
+  h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; color: var(--ink-900); }
+  .lead { font-size: 15px; color: var(--ink-500); margin: 0 0 24px; max-width: 72ch; }
+
+  /* Cards */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 780px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } .hero { padding: 40px 28px; } .hero h1 { font-size: 26px; } .hero .verdict .k { font-size: 18px; } }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+  .card .idx { font-family: "JetBrains Mono"; font-size: 11px; color: var(--ink-300); margin-bottom: 8px; letter-spacing: .14em; }
+  .card h3 { margin-bottom: 8px; }
+  .card p { margin: 0; color: var(--ink-500); font-size: 14px; }
+  .card .stat { font-size: 34px; font-weight: 900; color: var(--brand); line-height: 1; letter-spacing: -0.02em; margin: 6px 0 10px; }
+  .card .stat small { font-size: 14px; font-weight: 700; color: var(--ink-500); margin-left: 4px; }
+  .card .stat.bad { color: var(--bad); }
+
+  /* Chart: cluster distribution bars */
+  .bars { display: flex; flex-direction: column; gap: 11px; margin-top: 18px; }
+  .bar-row { display: grid; grid-template-columns: 150px 1fr 92px; gap: 12px; align-items: center; }
+  .bar-row .lbl { font-size: 13px; font-weight: 700; color: var(--ink-700); }
+  .bar-row .lbl small { display: block; color: var(--ink-500); font-weight: 400; font-size: 11px; margin-top: 2px; }
+  .bar-row .bar { height: 18px; border-radius: 6px; background: var(--line); overflow: hidden; position: relative; }
+  .bar-row .bar .fill { height: 100%; border-radius: 6px; }
+  .bar-row .val { font-family: "JetBrains Mono"; font-size: 13px; font-weight: 700; color: var(--ink-700); text-align: right; }
+
+  /* Two-column compare */
+  .corr { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+  .corr .side { padding: 28px; }
+  .corr .side.win { background: var(--bad-soft); }
+  .corr .side.lose { background: #f5f3f8; }
+  .corr .big { font-size: 56px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; }
+  .corr .win .big { color: var(--bad); }
+  .corr .lose .big { color: var(--good); }
+  .corr h4 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--ink-700); text-transform: uppercase; letter-spacing: .08em; }
+  .corr .note { font-size: 13px; color: var(--ink-500); margin-top: 10px; }
+
+  /* Cause tiers */
+  .tiers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .tier { padding: 24px; border-right: 1px solid var(--line); background: var(--surface); position: relative; }
+  .tier:last-child { border-right: 0; }
+  .tier .pill { display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: .1em; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; margin-bottom: 14px; }
+  .tier.c1 { background: #fff6f6; }
+  .tier.c1 .pill { background: var(--bad-soft); color: var(--bad); }
+  .tier.c2 .pill { background: rgba(248,207,104,.22); color: #a47b18; }
+  .tier.c3 .pill { background: rgba(111,145,239,.14); color: var(--owned); }
+  .tier h3 { font-size: 16px; }
+  .tier .verdict { font-size: 12px; font-weight: 700; margin: 14px 0 6px; }
+  .tier.c1 .verdict { color: var(--bad); }
+  .tier.c2 .verdict { color: #a47b18; }
+  .tier.c3 .verdict { color: var(--owned); }
+  .tier ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink-500); font-size: 13px; }
+  .tier ul li { margin-bottom: 4px; }
+  @media (max-width: 780px) { .tiers { grid-template-columns: 1fr; } .tier { border-right: 0; border-bottom: 1px solid var(--line); } .tier:last-child { border-bottom: 0; } }
+
+  /* Collision diagram */
+  .collide { display: grid; grid-template-columns: 1fr 64px 1fr; gap: 0; align-items: stretch; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .collide .pane { padding: 24px; background: var(--surface); }
+  .collide .pane.left { background: #f5f3f8; }
+  .collide .pane.right { background: #fff6f6; }
+  .collide .arrow { display: flex; align-items: center; justify-content: center; background: var(--ink-900); color: #fff; font-size: 22px; font-weight: 900; }
+  .collide .pane h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-700); }
+  .collide .tok { font-family: "JetBrains Mono"; font-size: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+  .collide .tok b { color: var(--bad); }
+  .collide .pane p { font-size: 13px; color: var(--ink-500); margin: 10px 0 0; }
+  @media (max-width: 780px) { .collide { grid-template-columns: 1fr; } .collide .arrow { padding: 8px; transform: rotate(90deg); } }
+
+  /* Before/After mockup */
+  .mockup { background: #f3f1f7; border-radius: var(--radius); padding: 24px; border: 1px solid var(--line); height: 100%; }
+  .mockup .title { font-size: 12px; color: var(--ink-500); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+  .ui { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .ui .sec { padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 13px; color: var(--ink-700); display: flex; gap: 8px; align-items: center; }
+  .ui .sec:last-child { border-bottom: 0; }
+  .ui .sec .n { font-family: "JetBrains Mono"; font-size: 11px; color: var(--ink-300); min-width: 16px; }
+  .ui .sec.ghost { color: var(--bad); }
+  .ui .sec.ghost .n { color: var(--bad); }
+  .ui .sec.ok .n { color: var(--good); }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .06em; text-transform: uppercase; }
+  .badge.bad { background: var(--bad-soft); color: var(--bad); }
+  .badge.good { background: rgba(0,173,152,.12); color: var(--good); }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .ba .col .label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+  .ba .col.before .label { color: var(--bad); }
+  .ba .col.after .label { color: var(--good); }
+  @media (max-width: 780px) { .ba { grid-template-columns: 1fr; } }
+
+  /* Callout */
+  .callout { background: var(--brand-soft); border-left: 4px solid var(--brand); padding: 20px 22px; border-radius: var(--radius); margin-top: 24px; }
+  .callout strong { color: var(--brand); }
+
+  /* Checklist */
+  .check-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .check-list li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+  .check-list .no { width: 24px; height: 24px; min-width: 24px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-weight: 900; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; }
+  .check-list b { display: block; margin-bottom: 2px; }
+  .check-list small { color: var(--ink-500); font-size: 12px; }
+
+  /* Footer */
+  footer { margin-top: 72px; font-size: 12px; color: var(--ink-500); text-align: center; }
+  .kbd { font-family: "JetBrains Mono"; font-size: 11px; background: #f2f0f6; padding: 2px 6px; border-radius: 4px; color: var(--ink-700); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="tag">Diagnosis · 2026-06-01 · Cluster Finder</span>
+    <h1>단일 키워드인데<br/>왜 이중 분석으로 폭주하고, 없는 키워드 B를 지어내는가</h1>
+    <p class="sub">agent_cluster 프롬프트(v.0.6.3) — 단일 입력 오작동 근본 원인 진단</p>
+    <div class="verdict">
+      <div class="k">진짜 원인은 데이터가 아니라 프롬프트다. <b>"A/B"가 두 가지 뜻으로 충돌</b>하면서, 모델이 클러스터 ID "B"를 두 번째 입력 키워드로 오인했다.</div>
+    </div>
+    <div class="meta">
+      <span>근거 데이터: <span class="kbd">problem/61b6c948-…-a4a31a3a027ff.json</span></span>
+      <span>대상 프롬프트: <span class="kbd">agent_cluster/KR·JP·EN/v.0.6.3</span></span>
+    </div>
+  </div>
+
+  <!-- EVIDENCE -->
+  <section>
+    <div class="eyebrow"><span class="num">1</span>데이터로 확정한 사실</div>
+    <h2>입력은 명백한 단일 키워드였다</h2>
+    <p class="lead">문제 JSON의 입력 라인과 CSV를 직접 파싱한 결과 — 텍스트 신호와 데이터 신호 <b>둘 다 "단일"</b>을 가리킨다. 그런데도 모델은 6섹션 이중 분석을 냈다.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="idx">EVIDENCE 01</div>
+        <h3>src 컬럼은<br/>전부 A 하나뿐</h3>
+        <div class="stat">2,180<small> / 2,180행 = A</small></div>
+        <p>CSV <code>src</code> 컬럼 고유값은 <b>A 단 하나</b>. 데이터상으로도 소스 키워드는 1개다. (입력 라인도 <code>Total source keywords: 1, A=버티컬 마우스</code>)</p>
+      </div>
+      <div class="card">
+        <div class="idx">EVIDENCE 02</div>
+        <h3>클러스터 ID는<br/>A부터 Q까지 17개</h3>
+        <div class="stat">A~Q<small> 17개 클러스터</small></div>
+        <p><code>c</code>(클러스터) 컬럼에는 B·K·L·Q 등이 가득하다. 모델은 이 <b>클러스터 "B"를 입력 키워드 "B"로 착각</b>할 구조적 빌미를 얻는다.</p>
+      </div>
+      <div class="card">
+        <div class="idx">EVIDENCE 03</div>
+        <h3>"인체공학 키보드"는<br/>데이터에 없다</h3>
+        <div class="stat bad">0<small> 행 (가공)</small></div>
+        <p>모델이 키워드 B 시장으로 제시한 <b>인체공학 키보드(7,906)</b> 노드는 CSV에 존재하지 않는다. 있는 건 인체공학 책상·마우스패드뿐 — 명백한 <b>날조</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLISION DIAGRAM -->
+  <section>
+    <div class="eyebrow"><span class="num">2</span>결정적 원인</div>
+    <h2>"A/B"가 두 가지 뜻으로 충돌한다</h2>
+    <p class="lead">프롬프트 안에서 알파벳 라벨이 <b>서로 다른 두 축</b>에 동시에 쓰인다. 단일 키워드 입력에서는 이 둘이 정면 충돌한다.</p>
+
+    <div class="collide">
+      <div class="pane left">
+        <h4>① 소스 키워드 라벨</h4>
+        <div class="tok">Source keywords: <b>A</b>=버티컬 마우스</div>
+        <div class="tok">(이중일 때만) <b>B</b>=&lt;키워드2&gt;</div>
+        <p>입력 키워드가 1개인지 2개인지를 가리키는 라벨. 지금은 <b>A 하나뿐.</b></p>
+      </div>
+      <div class="arrow">⇄</div>
+      <div class="pane right">
+        <h4>② 클러스터 ID (c 컬럼)</h4>
+        <div class="tok">클러스터 매핑: 0→<b>A</b>, 1→<b>B</b>, 2→C … Q</div>
+        <div class="tok">데이터: 클러스터 <b>B</b> = 25행 실재</div>
+        <p>군집 식별자. 데이터에 B가 멀쩡히 있으니, 모델은 <b>"키워드 B도 있다"</b>고 오판한다.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>그래서 무슨 일이 벌어졌나.</strong> 모델은 클러스터 "B/K/L/Q"의 존재를 "두 번째 입력 키워드 B"의 증거로 받아들였고, 키보드 관련 클러스터(Q)를 가공의 <code>키워드 B = 인체공학 키보드</code>에 끼워 맞춰 6섹션 이중 분석으로 폭주했다. 사용자에게 "src에 A~Q가 있다"고 답한 것도 <b>클러스터 c 컬럼을 src로 착각한 동일한 혼동</b>이다.
+    </div>
+  </section>
+
+  <!-- EXPECTED vs ACTUAL -->
+  <section>
+    <div class="eyebrow"><span class="num">3</span>기대 vs 실제</div>
+    <h2>4섹션이어야 할 답이 6섹션으로</h2>
+    <p class="lead">프롬프트 규칙상 단일 입력은 4개 섹션만 출력해야 한다. 실제 출력은 교차영역·개별시장까지 붙은 6섹션이었다.</p>
+
+    <div class="corr">
+      <div class="side lose">
+        <h4>기대 (단일 = 4섹션)</h4>
+        <div class="big">4</div>
+        <div class="note">분석 개요 · 검색목적 클러스터 · From→To 흐름 · 인사이트.<br/>키워드 B 언급 <b>없음</b>, 교차영역 <b>없음</b>이 정상.</div>
+      </div>
+      <div class="side win">
+        <h4>실제 (오작동 = 6섹션)</h4>
+        <div class="big">6</div>
+        <div class="note">위 4개 + <b>교차영역 분석</b> + <b>개별 시장·타겟 분석</b>.<br/>"통합 시장", "두 키워드 동시 조회" 같은 이중 전용 서술이 전면 등장.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOT CAUSE TIERS -->
+  <section>
+    <div class="eyebrow"><span class="num">4</span>원인 분해</div>
+    <h2>세 겹으로 쌓인 원인</h2>
+    <p class="lead">충돌(①)이 방아쇠라면, 약한 판별 신호(②)와 이중 프레임 템플릿(③)이 오작동을 증폭·고착시켰다.</p>
+
+    <div class="tiers">
+      <div class="tier c1">
+        <span class="pill">원인 1 · 결정적</span>
+        <h3>A/B 라벨 충돌</h3>
+        <div class="verdict">방아쇠</div>
+        <ul>
+          <li>소스 라벨(A/B)과 클러스터 ID(A~Q)가 같은 알파벳</li>
+          <li>클러스터 B 존재 → 키워드 B 존재로 오인</li>
+          <li>가공 키워드 B 생성의 직접 원인</li>
+        </ul>
+      </div>
+      <div class="tier c2">
+        <span class="pill">원인 2 · 증폭</span>
+        <h3>판별 신호가 약함</h3>
+        <div class="verdict">데이터 근거 미사용</div>
+        <ul>
+          <li>단일/이중 판단이 텍스트 토큰 1개에만 의존</li>
+          <li>가장 확실한 <code>src</code> 컬럼은 미문서화·미사용 (전체 프롬프트 등장 1회)</li>
+          <li>거대 키워드 반복 덤프로 lost-in-the-middle 가중</li>
+        </ul>
+      </div>
+      <div class="tier c3">
+        <span class="pill">원인 3 · 고착</span>
+        <h3>템플릿이 이중 전제</h3>
+        <div class="verdict">출력 형식이 유도</div>
+        <ul>
+          <li>섹션2 "성격: 키워드A 중심 | 키워드B 중심"</li>
+          <li>섹션5·6 전체가 "키워드 A / 키워드 B" 전제</li>
+          <li>단일 모드 하드 게이트·B생성 금지·자가검증 부재</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER OUTPUT -->
+  <section>
+    <div class="eyebrow"><span class="num">5</span>출력 비교</div>
+    <h2>지금 나오는 답 vs 나와야 하는 답</h2>
+    <p class="lead">같은 단일 입력에 대해, 현재는 날조된 B 시장이 포함된 6섹션이 나온다. 기대값은 B가 일절 없는 4섹션이다.</p>
+
+    <div class="ba">
+      <div class="col before">
+        <div class="label">현재 · 오작동</div>
+        <div class="mockup">
+          <div class="title">단일 입력에 대한 실제 출력 <span class="badge bad">잘못됨</span></div>
+          <div class="ui">
+            <div class="sec ok"><span class="n">1</span>분석 개요 <span style="color:var(--bad)">— "통합 시장" 서술 혼입</span></div>
+            <div class="sec ok"><span class="n">2</span>Top 3 검색목적 <span style="color:var(--bad)">— 성격: 키워드 B 중심</span></div>
+            <div class="sec ok"><span class="n">3</span>From → To 흐름 <span style="color:var(--bad)">— 교차 이동 가정</span></div>
+            <div class="sec ok"><span class="n">4</span>인사이트</div>
+            <div class="sec ghost"><span class="n">5</span>교차영역 분석 — 있어선 안 됨</div>
+            <div class="sec ghost"><span class="n">6</span>개별 시장 분석 — 키워드 B=인체공학 키보드(날조)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col after">
+        <div class="label">기대 · 정상</div>
+        <div class="mockup">
+          <div class="title">단일 입력에 대한 기대 출력 <span class="badge good">정상</span></div>
+          <div class="ui">
+            <div class="sec ok"><span class="n">1</span>분석 개요 — 버티컬 마우스 시장 내부 구조</div>
+            <div class="sec ok"><span class="n">2</span>Top 3 검색목적 — 단일 시장 의도 축</div>
+            <div class="sec ok"><span class="n">3</span>From → To 흐름 — 시장 내부 이동</div>
+            <div class="sec ok"><span class="n">4</span>인사이트 — 단일 시장 전략 시사점</div>
+            <div class="sec" style="color:var(--ink-300)"><span class="n" style="color:var(--ink-300)">5</span>(출력 안 함)</div>
+            <div class="sec" style="color:var(--ink-300)"><span class="n" style="color:var(--ink-300)">6</span>(출력 안 함) · 키워드 B 언급 0회</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY / OBJECTIONS -->
+  <section>
+    <div class="eyebrow"><span class="num">6</span>왜 이렇게 됐나</div>
+    <h2>예상 질문에 답하기</h2>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>데이터가 잘못 들어온 건 아닌가?</h3>
+        <p>아니다. 입력 라인 <code>Total source keywords: 1</code>, <code>src</code> 전부 A — 데이터는 일관되게 단일이다. 문제는 데이터를 읽는 <b>프롬프트의 라벨 충돌</b>이다.</p>
+      </div>
+      <div class="card">
+        <h3>모델이 규칙을 안 읽은 건가?</h3>
+        <p>규칙은 있다("1이면 4섹션"). 하지만 판단을 <b>버려진 텍스트 토큰 1개</b>에만 맡겼고, 데이터에 실재하는 클러스터 B가 그 토큰을 이겨버렸다.</p>
+      </div>
+      <div class="card">
+        <h3>왜 하필 "인체공학 키보드"인가?</h3>
+        <p>키보드 관련 클러스터(Q 등)가 데이터에 있으니, 모델이 "키워드 B는 키보드일 것"이라 추론해 그럴듯한 이름을 <b>창작</b>했다. 검색량 7,906도 인접 노드에서 끌어온 값이다.</p>
+      </div>
+      <div class="card">
+        <h3>"데이터에 없는 것 지어내지 마라" 규칙이 있는데?</h3>
+        <p>있다. 그러나 그 규칙은 수치 인용에 걸려 있고, <b>키워드 개수 판별</b>에는 강제 게이트가 없다. 그래서 B 생성을 막지 못했다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFICATION -->
+  <section>
+    <div class="eyebrow"><span class="num">7</span>진단 검증</div>
+    <h2>이 진단이 맞는지 이렇게 확인한다</h2>
+
+    <ol class="check-list">
+      <li><span class="no">1</span><div><b>src 고유값 재확인</b><small>문제 JSON CSV에서 src 컬럼 distinct = {A} 단일임을 재파싱. 이중이라면 A·B 둘 다 나와야 하는데 그렇지 않음.</small></div></li>
+      <li><span class="no">2</span><div><b>날조 키워드 부재 확인</b><small>n(키워드명) 컬럼 전체에서 "인체공학 키보드" 완전일치 검색 → 0건. 모델 출력의 키워드 B 시장이 데이터 무근거임을 입증.</small></div></li>
+      <li><span class="no">3</span><div><b>충돌 가설 재현 테스트</b><small>동일 단일 입력 + 클러스터 라벨을 숫자(0,1,2…)로 바꾼 변형 데이터로 재실행. B 오인이 사라지면 A/B 충돌이 방아쇠임이 확정.</small></div></li>
+      <li><span class="no">4</span><div><b>판별 신호 보강 A/B 테스트</b><small>"입력 키워드 수 = src 고유값 개수"를 명시한 프롬프트와 현행을 비교. 전자에서 단일 입력이 4섹션으로 안정되는지 관측.</small></div></li>
+    </ol>
+  </section>
+
+  <!-- FINAL -->
+  <section>
+    <div class="eyebrow"><span class="num">8</span>한 문장 요약</div>
+    <div class="hero" style="padding: 44px 40px;">
+      <div class="verdict" style="background: rgba(255,255,255,.1);">
+        <div class="k" style="font-size: 20px;">단일 키워드인데 이중으로 답하는 건 데이터 오류가 아니라 <b>"A/B" 라벨 충돌</b> 때문이다.<br/>가장 확실한 신호인 src 컬럼을 판별 기준으로 쓰고, 클러스터 ID와 소스 라벨을 분리하면 풀린다.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Diagnosis · cf-single-keyword-misfire · 2026-06-01 ·
+    근거 데이터: <span class="kbd">agent_cluster/problem/61b6c948-92a8-4397-8f04-4a31a3a027ff.json</span> ·
+    대상: <span class="kbd">agent_cluster/{KR,JP,EN}/v.0.6.3_cf_*_0507.md</span>
+  </footer>
+</div>
+</body>
+</html>
