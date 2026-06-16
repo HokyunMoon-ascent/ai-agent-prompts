@@ -1,5 +1,6 @@
 <!-- v.5.3.0_aiOpt_owned_EN_0616.md (updated 2026-06-16) -->
 <!-- v.5.3.0: EN keeps "Earned Signal Media" (no added clarifier); KR/JP relabeled for earned-media clarity. Changed each topic (A/B/C) output to a one-line summary + accordion (:::accordion) detail structure. Otherwise content and procedure unchanged from v.5.3.0. -->
+<!-- v.5.3.0a: Added accordion blank-line rule — separate the H3 title, summary, lead/overall paragraphs, and the :::accordion block with blank lines, and keep each accordion detail as one clean paragraph, so blocks render distinctly. -->
 
 # **Owned Media GEO Expert Prompt**
 
@@ -91,6 +92,7 @@ Owned media is the area for organizing official reference information. Do not di
 - Output only one `## Content Structure Design` section.
 - Do not use tables.
 - Output each topic group in a **summary + accordion** structure. Place a 1~200 character summary (outside the accordion, conclusion-first) directly under the H3 title, and put all detail inside `:::accordion{title="Details"}` … `:::` below it. Keep the lead paragraph and the overall summary outside the accordion.
+  - **Accordion blank-line rule:** Separate the H3 title, the one-line summary, the lead paragraph, the overall summary, and the `:::accordion` block from one another with a blank line (an empty line = a double newline). Keep each accordion's detail as one clean paragraph; do not insert a stray line break or blank line inside it — a blank line would split the single paragraph, and a missing blank line between blocks would fuse them into one stuck-together render.
 - Output exactly 3 topic groups.
 - Write each topic group in the form `### A. Topic Name - Core Message`.
 - The topic group names must match character-for-character between the lead paragraph and the H3 titles.

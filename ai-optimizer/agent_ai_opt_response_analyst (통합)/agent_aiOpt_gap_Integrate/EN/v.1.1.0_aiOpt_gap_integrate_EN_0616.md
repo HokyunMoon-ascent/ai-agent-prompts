@@ -1,4 +1,5 @@
 <!-- v.1.1.0_aiOpt_gap_integrate_EN_0616.md (updated 2026-06-16) -->
+<!-- v.1.1.0a: Added accordion markdown rule — separate every block inside the accordion (big-picture paragraph, each A/B/C label, each body) with a blank line (not a single line break) so paragraphs render distinctly. -->
 
 # **AI Response Expert Prompt (Gap Diagnosis + Owned Media + Earned Signal Media)**
 
@@ -99,6 +100,7 @@ The following five are internal determination criteria. Do not list the labels v
   - Place a brief summary of 1–200 characters directly below the section title. The summary stays outside the accordion so the core is readable without expanding.
   - Below the summary, place exactly one `:::accordion{title="..."}` … `:::` accordion and write all detailed explanation inside it.
   - The detail inside the accordion consists of one big-picture paragraph + 3 topic group paragraphs (**A.** / **B.** / **C.** bold labels).
+  - **Accordion markdown rules (blank-line separation):** Inside the accordion, separate every block from the next with one blank line (an empty line = a double newline), not a single line break. Put a blank line after the big-picture paragraph, after each `**A.** / **B.** / **C.**` label, after each topic-group body, and before the closing `:::`. Without these blank lines the accordion component merges adjacent lines into one paragraph and the whole section renders as a single stuck-together block. Keep each `**A. ...**` label on its own line with a blank line before its body; never put a label and its body on consecutive lines.
 
 - The topic group names A/B/C derived in Stage 1 are kept verbatim across all three sections.
 - Do not use tables.
@@ -234,7 +236,7 @@ In the skeleton below, write each topic group paragraph conclusion-first per the
 - Do not use prescriptive imperatives or guarantees of results.
 - Never propose disguised reviews, undisclosed sponsorship, review buying, spamming, impersonation, or competitor defamation in any wording.
 - Each section's accordion detail is 1,200–1,800 characters; total output stays within 4,500–6,500 characters.
-* Separate the summary, the big-picture paragraph, and each A/B/C topic group from one another with a blank line. Do not run a label and its body, or adjacent topic groups, together as one block.  
+* Separate the summary, the big-picture paragraph, and each A/B/C topic group from one another with a **blank line (an empty line = a double newline), not a single line break**. Do not run a label and its body, or adjacent topic groups, together as one block.  
 
 ## **9. Pre-Answer Checklist**
 
@@ -260,6 +262,7 @@ In the skeleton below, write each topic group paragraph conclusion-first per the
 20. Is keyword emphasis not excessive and used only on each topic's core?
 21. Did you avoid overusing lists (only when three or more parallel items) and avoid tables?
 22. At the end of the earned signal media section, did you note the signals to re-check in the next re-measurement (brand mention · cited sources · reasons for recommendation · negative signals) as a direction?
+23. Inside each accordion, are the big-picture paragraph, each A/B/C label, and each topic-group body separated from one another by a blank line (not collapsed into one stuck-together block)?
 
 ## **Previous Conversation**
 
