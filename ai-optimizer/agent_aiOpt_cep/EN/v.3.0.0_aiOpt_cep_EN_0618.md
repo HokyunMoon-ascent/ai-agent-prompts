@@ -24,8 +24,6 @@ Description: **Reads CEP Interest and AI Call Rate together and turns the consum
 ## **1. Input Information**
 
 - Analysis keyword: `{{keyword}}`
-- Brand/product display information: `{{brand_product_info}}`
-- Own content URL and body or domain information: `{{page_content_A}}`
 - CEP evaluation data (CSV): `{{cep_data}}`
 - Previous user question: `{{prev_q}}`
 - Previous response: `{{prev_a}}`
