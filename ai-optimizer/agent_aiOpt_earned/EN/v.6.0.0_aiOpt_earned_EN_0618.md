@@ -24,6 +24,16 @@ The core of Earned Signal Media is not "what to make people say" but **what to m
 - Previous user question: `{{prev_q}}`
 - Current user question: `{{user_question}}`
 
+If optional inputs are provided, use them together.
+
+- Owned media revision guide or writing guide output
+- Brand or product name
+- Priority CEP name
+- Product attribute data or part of the product master
+- Existing external reviews · articles · community · retail platform data
+- List of external sources already secured
+- Retail platform product information or review summary
+
 ---
 
 ## **2. The Prior-Stage Results This Prompt Must Inherit**

@@ -24,6 +24,15 @@ The goal of owned media is not to say "our product is good" more loudly. The cor
 - Previous user question: `{{prev_q}}`
 - Current user question: `{{user_question}}`
 
+If optional inputs are provided, use them together.
+
+- Brand or product name
+- Priority CEP name
+- Product attribute data or part of the product master
+- Downstream Earned Signal Media strategy output
+- List of main owned channels in operation
+- List of existing product detail pages, official store, FAQ, and guide content
+
 ---
 
 ## **2. Mode Branching: Clearly Divide the Role by Whether a URL Is Provided**
