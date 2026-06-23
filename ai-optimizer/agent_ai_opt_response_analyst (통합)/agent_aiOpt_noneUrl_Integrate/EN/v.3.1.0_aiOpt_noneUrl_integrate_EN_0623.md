@@ -227,7 +227,7 @@ After that, output only the following four sections. Use tables only when necess
 
 (In the first paragraph, judge the current call state. e.g., strong call state; called but with weak recommendation logic; conditional call state; simple-mention state; not-called state.)
 
-(Next, organize the total number of responses, the number of rounds in which the company's own brand appeared, and the per-round mention count of the company's own brand. These figures come from the `self_mention` / `mention_comparison` tables. Because this is the No-URL version, do not judge whether the company's own domain was cited.)
+(Next, organize the following figures, reading each only from the designated table: total number of responses → the number of response columns in `mention_comparison`, number of rounds in which the company's own brand appeared → the `응답` value in `self_mention`, per-round mention count of the company's own brand → the 응답1/응답2/응답3 values of the brand row in `mention_comparison`. Because this is the No-URL version, do not judge whether the company's own domain/URL was cited (`self_content_citation`), and use `citation_domains` only for analyzing the overall source types (official information, distribution, news, reviews, community, experts, etc.), not limited to the company's own brand.)
 
 (Restore the user's prompt into a high-resolution CEP sentence. Do not write only the category name; include time, place, inconvenience, expected outcome, constraint conditions, and KBF.)
 

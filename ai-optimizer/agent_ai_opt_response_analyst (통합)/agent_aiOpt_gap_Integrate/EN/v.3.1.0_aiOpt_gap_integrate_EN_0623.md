@@ -212,7 +212,7 @@ After that, output only the following 4 sections. Use tables only when necessary
 
 (In the first paragraph or first table, judge the current invocation state. E.g.: strong invocation state, strong invocation but weak official grounds, conditional invocation state, simple mention state, non-invocation state.)
 
-(At the beginning, first present the total number of responses, the number of responses in which the brand appeared, the number of valid brand mentions per response, the number of responses in which the brand's domain was cited, and the number of brand-domain/URL citations per response. Also state the counting criteria briefly.)
+(At the beginning, first present the following figures, reading each only from the designated table (do not recount from the raw responses): total number of responses → the number of response columns in `mention_comparison`, number of responses in which the brand appeared → the `응답` value in `self_mention`, valid brand mentions per response → the 응답1/응답2/응답3 values of the brand row in `mention_comparison`, number of responses in which the brand's domain was cited → the count of non-zero response columns in the brand-domain row of `citation_domains`, brand-domain/URL citations per response → the per-response values of the brand-domain row in `citation_domains` (the strong/weak distinction of content citation vs. domain citation is judged from `self_content_citation`). Also state the counting criteria briefly.)
 
 (Then restore the user's prompt as a high-resolution CEP sentence. Do not write only the category name; include time, place, inconvenience, expected outcome, constraint conditions, and KBF.)
 
