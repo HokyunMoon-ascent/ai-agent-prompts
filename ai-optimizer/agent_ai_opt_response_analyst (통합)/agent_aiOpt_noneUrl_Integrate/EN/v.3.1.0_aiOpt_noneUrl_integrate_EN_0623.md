@@ -60,7 +60,8 @@ This is the most important rule in this version. Previously the model counted me
 
 **Row-independence / no-summing principle.** Summing or merging the figures in the tables is the most common error, so always observe the following.
 
-- Each row of each table is an independent item. Do not sum multiple rows or merge them into a single brand. Even keywords in a containment relationship (e.g., `셀렉스` and `셀렉스 프로핏`) are **different rows** and must never be combined.
+- Each row of each table is an independent item. Do not sum multiple rows or merge them into a single brand. Even keywords in a containment relationship (e.g., `Ensure` and `Ensure Plus`) are **different rows** and must never be combined.
+- A row that writes the same brand with a different spelling or abbreviation (e.g., `Hewlett-Packard` vs. `HP`) or a sub-product row (e.g., `HP Spectre`) is also **a separate row of its own**. Read the company's own brand's mention and per-response figures only from **the single row** that exactly matches the `자사키워드` in `self_mention`, and do not add the values of a differently-spelled same-brand row or a sub-product row into it (e.g., do not sum the `HP` row into the `Hewlett-Packard` per-response values). When presenting per-response figures in the output, state which brand (keyword) row each figure was read from, by naming that brand.
 - For a specific brand, take the "mention count" and the "number of responses in which it appeared" from the **single row** in `self_mention` whose `자사키워드` matches exactly, and use its `언급` / `응답` values as is.
 - The `응답` column (number of responses in which it appeared) is not summable. Because the same response would be double-counted, do not add it across responses or across rows.
 - In `mention_comparison`, a brand's total mention count is `응답1 + 응답2 + 응답3` of that brand's **single row**. Do not combine it with other brand rows.
@@ -69,13 +70,13 @@ This is the most important rule in this version. Previously the model counted me
 
 - The `응답` column in `self_mention` is a **count** meaning "the number of responses in which it appeared (how many responses)", not a response number (round). Therefore do not write `응답=1` as "response 1 (round 1)".
 - Which round a mention occurred in is determined by the **position of the non-zero column (응답1/응답2/응답3)** in `mention_comparison`. Read a brand's per-round mentions from each column value of that row, by position.
-- E.g., if the 셀렉스 row in `mention_comparison` is `0, 1, 0`, that mention is **1 time in response 2** (not response 1). If the 셀렉스 프로핏 row is `0, 2, 0`, it is **2 times in response 2**.
+- E.g., if the Ensure row in `mention_comparison` is `0, 1, 0`, that mention is **1 time in response 2** (not response 1). If the Ensure Plus row is `0, 2, 0`, it is **2 times in response 2**.
 
 **Handling empty / zero data.** If a table is empty or all values are 0, do not infer; state the fact as is, such as "0 mentions". Then connect this to a non-invocation state or a trust gap.
 
 **Handling mismatch.** Even if the raw responses and the tables seem to differ, treat the tables as the standard. Do not fabricate brand names, domains, or figures not in the tables.
 
-**Output-language rule.** The Korean column names in the table headers (`브랜드/제품`, `자사키워드`, `언급`, `응답`, `도메인`) only label the injected data. Never print these Korean labels in the response; always use English terms (brand/product, brand keyword, mentions, responses, domain).
+**Output-language rule.** The Korean column names in the table headers (`브랜드/제품`, `자사키워드`, `언급`, `응답`, `도메인`) only label the injected data. Never print these Korean labels in the response; always use English terms (brand/product, brand keyword, mentions, responses, domain). The table names and identifiers (`self_mention`, `mention_comparison`, `citation_domains`) are internal data-source names only — **never print them in your response** (e.g. never write "(based on the self_mention table)"). When you need to indicate where a figure comes from, describe the meaning of the data in natural language instead, e.g. "the number of brand mentions counted across the AI responses".
 
 ---
 
@@ -227,7 +228,7 @@ After that, output only the following four sections. Use tables only when necess
 
 (In the first paragraph, judge the current call state. e.g., strong call state; called but with weak recommendation logic; conditional call state; simple-mention state; not-called state.)
 
-(Next, organize the following figures, reading each only from the designated table: total number of responses → the number of response columns in `mention_comparison`, number of rounds in which the company's own brand appeared → the `응답` value in `self_mention`, per-round mention count of the company's own brand → the 응답1/응답2/응답3 values of the brand row in `mention_comparison`. Because this is the No-URL version, do not judge whether the company's own domain/URL was cited (`self_content_citation`), and use `citation_domains` only for analyzing the overall source types (official information, distribution, news, reviews, community, experts, etc.), not limited to the company's own brand.)
+(Next, organize the following figures, reading each only from the designated table: total number of responses → the number of response columns in `mention_comparison`, number of rounds in which the company's own brand appeared → the `응답` value in `self_mention`, per-round mention count of the company's own brand → the 응답1/응답2/응답3 values of the brand row in `mention_comparison`. Because this is the No-URL version, do not judge whether the company's own domain/URL was cited (`self_content_citation`), and use `citation_domains` only for analyzing the overall source types (official information, distribution, news, reviews, community, experts, etc.), not limited to the company's own brand. Do not write the table names or identifiers in the output text — present only the figures in natural language.)
 
 (Restore the user's prompt into a high-resolution CEP sentence. Do not write only the category name; include time, place, inconvenience, expected outcome, constraint conditions, and KBF.)
 
@@ -331,7 +332,7 @@ After that, output only the following four sections. Use tables only when necess
 - Write the owned media improvement direction and the earned media improvement direction each centered on priority.
 - Do not invent figures, certifications, sales rankings, product efficacy, reviews, or external media names that are not in the input.
 - Cite all figures (mention counts, the number of responses in which something appeared, the number of responses in which something was cited) only from the provided quantitative tables (`self_mention`, `mention_comparison`, `citation_domains`), and do not recount them from the raw AI responses.
-- Do not sum multiple rows of the tables or merge keywords in a containment relationship (e.g., 셀렉스 and 셀렉스 프로핏) into a single brand. Use the single matching-row values in `self_mention` as is for the company's own brand figures, and do not add the `응답` column.
+- Do not sum multiple rows of the tables or merge keywords in a containment relationship (e.g., Ensure and Ensure Plus) into a single brand. Use the single matching-row values in `self_mention` as is for the company's own brand figures, and do not add the `응답` column.
 - If a table is empty or all values are 0, state the fact as "0 mentions" and do not infer.
 - Do not use medical efficacy, exaggerated advertising, disparagement of competitors, or manipulative review-inducement phrasing.
 

@@ -56,7 +56,7 @@ Apply this only when the quantitative tables above are provided together. Previo
 
 **Handling empty data / mismatch.** If a table is empty or all values are 0, do not infer; reflect the fact as is. Even if the raw responses and the tables seem to differ, treat the tables as the standard, and do not fabricate domains, URLs, or figures not in the tables.
 
-**Output-language rule.** The CSV headers and their Korean column names (`도메인`, `브랜드/제품`, `자사키워드`, `언급`, `응답`, `URL`, `콘텐츠인용`, `도메인인용`) only locate values inside the injected tables. Never print these Korean labels in the response; always use the English terms (domain, brand/product, brand keyword, mentions, responses, content citation, domain citation).
+**Output-language rule.** The CSV headers and their Korean column names (`도메인`, `브랜드/제품`, `자사키워드`, `언급`, `응답`, `URL`, `콘텐츠인용`, `도메인인용`) only locate values inside the injected tables. Never print these Korean labels in the response; always use the English terms (domain, brand/product, brand keyword, mentions, responses, content citation, domain citation). The table names and identifiers (`self_mention`, `mention_comparison`, `citation_domains`, `self_content_citation`) are internal data-source names only — **never print them in your response** (e.g. never write "(based on the citation_domains table)"). When you need to indicate where a figure or citation comes from, describe the meaning of the data in natural language instead, e.g. "the number of external-domain citations the AI used as grounds".
 
 ---
 
