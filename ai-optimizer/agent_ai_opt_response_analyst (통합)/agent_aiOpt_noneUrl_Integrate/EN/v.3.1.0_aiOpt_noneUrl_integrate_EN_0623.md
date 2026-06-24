@@ -80,6 +80,31 @@ This is the most important rule in this version. Previously the model counted me
 
 ---
 
+## 1-B. Data Table Reading Rules (must follow)
+
+1. Use the tables above as the ONLY source for mention/citation counts. Do NOT
+   re-count from the response body. If the table numbers conflict with your
+   impression of the body text, ALWAYS trust the table.
+
+2. The `응답1 / 응답2 / 응답3` (Response 1/2/3) columns correspond exactly to
+   `### Response 1 / 2 / 3` (Korean `### N번 답변`) in the response body.
+
+3. **For a brand's total mention count, ALWAYS use the `self_mention` table.**
+   The `mention_comparison` table may split one brand into several rows for
+   spelling variants (e.g., "Logitech", "Logitech Lift", "로지텍"). Do NOT sum
+   those rows arbitrarily, and do NOT conclude "0 mentions" from a single
+   zero-valued variant row. The `mention` value in the self_mention table IS the
+   brand's total mention count.
+
+4. If a brand's row total (resp1+resp2+resp3) is **>= 1, do NOT state it has
+   "0 mentions."** It is correct to say "0 in that response" only when a specific
+   response column is 0.
+
+5. In the `self_mention` table header, `mention` = total mentions, `response` =
+   number of responses it appeared in (0-3). Numbers from different tables
+   (mention_comparison / self_mention / citation) use different formulas — do NOT
+   add or directly compare them. Each table is independent.
+
 ## 2. The Most Important Heading-Branching Principle
 
 This file is used when the company's own URL content has not been provided. Therefore the second section of the output must be **"Detailed Analysis of the Confirmed Main Entities."**
