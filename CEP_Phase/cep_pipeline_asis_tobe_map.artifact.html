@@ -1,0 +1,425 @@
+<style>
+  :root{
+    --bg:#eceff5; --panel:#ffffff; --panel-2:#f6f8fc;
+    --ink:#151e2b; --ink-soft:#4a586b; --ink-faint:#8391a6;
+    --line:#d7dee9; --line-strong:#bcc7d6;
+    --accent:#2f6df6; --accent-soft:#e6eeff;
+    --new:#1a9d59; --new-soft:#e0f4e9;
+    --moved:#bd7412; --moved-soft:#f8ecd6;
+    --later:#7458ff; --later-soft:#eae5ff;
+    --brand:#2f6df6; --brand-soft:#e6eeff;
+    --nonbrand:#0d9488; --nonbrand-soft:#d9f2ee;
+    --shadow:0 1px 2px rgba(20,32,52,.06),0 6px 18px rgba(20,32,52,.06);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d131e; --panel:#161f2d; --panel-2:#1a2434;
+      --ink:#e7edf6; --ink-soft:#aab7ca; --ink-faint:#6e7d94;
+      --line:#2a3648; --line-strong:#3a4a61;
+      --accent:#5f8dff; --accent-soft:#1a2a49;
+      --new:#3ccf8b; --new-soft:#123528;
+      --moved:#e0a63a; --moved-soft:#3a2f14;
+      --later:#9a83ff; --later-soft:#241d4a;
+      --brand:#5f8dff; --brand-soft:#1a2a49;
+      --nonbrand:#2dd4bf; --nonbrand-soft:#0d332f;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d131e; --panel:#161f2d; --panel-2:#1a2434;
+    --ink:#e7edf6; --ink-soft:#aab7ca; --ink-faint:#6e7d94;
+    --line:#2a3648; --line-strong:#3a4a61;
+    --accent:#5f8dff; --accent-soft:#1a2a49;
+    --new:#3ccf8b; --new-soft:#123528;
+    --moved:#e0a63a; --moved-soft:#3a2f14;
+    --later:#9a83ff; --later-soft:#241d4a;
+    --brand:#5f8dff; --brand-soft:#1a2a49;
+    --nonbrand:#2dd4bf; --nonbrand-soft:#0d332f;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#eceff5; --panel:#ffffff; --panel-2:#f6f8fc;
+    --ink:#151e2b; --ink-soft:#4a586b; --ink-faint:#8391a6;
+    --line:#d7dee9; --line-strong:#bcc7d6;
+    --accent:#2f6df6; --accent-soft:#e6eeff;
+    --new:#1a9d59; --new-soft:#e0f4e9;
+    --moved:#bd7412; --moved-soft:#f8ecd6;
+    --later:#7458ff; --later-soft:#eae5ff;
+    --brand:#2f6df6; --brand-soft:#e6eeff;
+    --nonbrand:#0d9488; --nonbrand-soft:#d9f2ee;
+    --shadow:0 1px 2px rgba(20,32,52,.06),0 6px 18px rgba(20,32,52,.06);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.5;
+    font-size:15px; letter-spacing:-.005em;
+    padding:clamp(16px,3.5vw,48px);
+  }
+  .wrap{max-width:1180px; margin:0 auto}
+
+  /* ---- header ---- */
+  header{position:relative}
+  .eyebrow{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--accent); font-weight:600;
+  }
+  h1{
+    font-size:clamp(24px,3.4vw,36px); line-height:1.12; margin:.35em 0 .3em;
+    font-weight:760; letter-spacing:-.02em; text-wrap:balance;
+  }
+  .lede{color:var(--ink-soft); max-width:64ch; margin:0}
+  .lede code{font-family:var(--mono); font-size:.86em; background:var(--panel-2);
+    border:1px solid var(--line); border-radius:5px; padding:.05em .4em; color:var(--ink)}
+
+  .toggle{
+    position:absolute; top:0; right:0;
+    font:inherit; font-size:12.5px; color:var(--ink-soft);
+    background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:7px 13px; cursor:pointer; box-shadow:var(--shadow);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .toggle:hover{border-color:var(--line-strong); color:var(--ink)}
+  .toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  /* ---- legend ---- */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center;
+    margin:22px 0 6px; padding:12px 15px;
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow);
+  }
+  .legend .lg{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft)}
+  .dot{width:11px; height:11px; border-radius:3px; flex:none}
+  .dot.new{background:var(--new)} .dot.moved{background:var(--moved)} .dot.later{background:var(--later)}
+  .swatch{width:26px; height:0; border-top:2px solid var(--line-strong); flex:none}
+  .swatch.dash{border-top:2px dashed var(--later)}
+
+  /* ---- comparison grid ---- */
+  .cols{
+    display:grid; grid-template-columns:1fr 1fr; gap:22px;
+    margin-top:22px; align-items:start;
+  }
+  @media (max-width:860px){ .cols{grid-template-columns:1fr} }
+
+  .col{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:18px 18px 22px; box-shadow:var(--shadow); min-width:0;
+  }
+  .col.tobe{background:linear-gradient(180deg,var(--accent-soft),transparent 120px),var(--panel)}
+  .col-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px}
+  .tag{
+    font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; padding:4px 9px; border-radius:6px; flex:none;
+  }
+  .tag.asis{background:var(--panel-2); color:var(--ink-soft); border:1px solid var(--line)}
+  .tag.tobe{background:var(--accent); color:#fff}
+  .col-head h2{font-size:17px; margin:0; font-weight:700; letter-spacing:-.01em}
+  .col-sub{font-size:12.5px; color:var(--ink-faint); margin:2px 0 16px}
+  .col-sub code{font-family:var(--mono); color:var(--ink-soft)}
+
+  /* ---- flow nodes ---- */
+  .flow{display:flex; flex-direction:column; align-items:stretch}
+  .link{height:16px; position:relative; flex:none}
+  .link::before{content:""; position:absolute; left:50%; top:0; bottom:4px;
+    width:2px; transform:translateX(-50%); background:var(--line-strong)}
+  .link::after{content:""; position:absolute; left:50%; bottom:1px;
+    width:7px; height:7px; border-right:2px solid var(--line-strong);
+    border-bottom:2px solid var(--line-strong); transform:translateX(-50%) rotate(45deg)}
+
+  .node{
+    display:flex; gap:11px; align-items:flex-start;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:11px;
+    padding:11px 13px; position:relative;
+  }
+  .node .pnum{
+    font-family:var(--mono); font-size:12px; font-weight:700;
+    min-width:34px; height:24px; padding:0 6px; border-radius:6px;
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    background:var(--accent); color:#fff; margin-top:1px; letter-spacing:-.02em;
+  }
+  .node .body{min-width:0; flex:1}
+  .node .nname{font-weight:650; font-size:14px; letter-spacing:-.01em}
+  .node .nio{
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-soft);
+    margin-top:3px; line-height:1.45; word-break:break-word;
+  }
+  .node .nio .arr{color:var(--accent); font-weight:700; padding:0 3px}
+  .node .nio b{color:var(--ink); font-weight:600}
+
+  /* node variants */
+  .node.entry{background:transparent; border-style:dashed; border-color:var(--line-strong)}
+  .node.entry .pnum{background:var(--ink-soft)}
+  .node.entry .nname{color:var(--ink-soft)}
+  .node.gate{background:var(--new-soft); border-color:var(--new)}
+  .node.gate .pnum{background:var(--new)}
+  .node.merge{background:transparent; border-style:dashed; border-color:var(--accent);
+    justify-content:center; text-align:center}
+  .node.merge .nname{color:var(--accent); font-size:12.5px; font-family:var(--mono);
+    letter-spacing:.04em; font-weight:700}
+
+  /* inline badges */
+  .badge{
+    display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700;
+    letter-spacing:.05em; padding:2px 6px; border-radius:5px; margin-left:6px;
+    vertical-align:middle; text-transform:uppercase; white-space:nowrap;
+  }
+  .badge.new{background:var(--new-soft); color:var(--new); border:1px solid var(--new)}
+  .badge.moved{background:var(--moved-soft); color:var(--moved); border:1px solid var(--moved)}
+  .badge.later{background:var(--later-soft); color:var(--later); border:1px solid var(--later)}
+  .seed{color:var(--new); font-weight:600}
+
+  /* branch lanes */
+  .branch{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:420px){ .branch{grid-template-columns:1fr} }
+  .lane{border-radius:11px; padding:11px 12px; border:1px solid; font-size:12.5px}
+  .lane.brand{background:var(--brand-soft); border-color:var(--brand)}
+  .lane.nonbrand{background:var(--nonbrand-soft); border-color:var(--nonbrand)}
+  .lane .lh{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.03em;
+    display:flex; align-items:center; gap:6px; margin-bottom:5px}
+  .lane.brand .lh{color:var(--brand)} .lane.nonbrand .lh{color:var(--nonbrand)}
+  .lane p{margin:0; color:var(--ink-soft); line-height:1.45}
+  .lane p + p{margin-top:7px}
+  .lane .mth{font-size:11.5px; color:var(--later); border-top:1px dashed var(--line-strong);
+    padding-top:6px; line-height:1.5}
+  .lane .mth b{color:var(--later)}
+  .lane code{font-family:var(--mono); color:var(--ink); font-size:.92em}
+  .split-note{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint);
+    text-align:center; margin:10px 0 2px; letter-spacing:.03em}
+
+  /* ---- diff summary ---- */
+  .diff{margin-top:30px}
+  .diff h3{font-size:18px; margin:0 0 3px; font-weight:720; letter-spacing:-.01em}
+  .diff .dsub{color:var(--ink-faint); font-size:13px; margin:0 0 16px}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px}
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:13px;
+    padding:15px 16px; box-shadow:var(--shadow); position:relative;
+    border-left:4px solid var(--line-strong);
+  }
+  .card.k-new{border-left-color:var(--new)}
+  .card.k-moved{border-left-color:var(--moved)}
+  .card.k-seed{border-left-color:var(--new)}
+  .card.k-later{border-left-color:var(--later)}
+  .card .ct{display:flex; align-items:center; gap:8px; font-weight:680; font-size:14px; margin-bottom:6px}
+  .card .cd{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0}
+  .card .cd code{font-family:var(--mono); font-size:.9em; color:var(--ink);
+    background:var(--panel-2); border:1px solid var(--line); border-radius:4px; padding:.02em .35em}
+
+  /* ---- easy explain (Q&A) ---- */
+  .explain{margin-top:34px}
+  .explain h3{font-size:18px; margin:0 0 3px; font-weight:720; letter-spacing:-.01em}
+  .explain .dsub{color:var(--ink-faint); font-size:13px; margin:0 0 16px}
+  .qa{
+    background:var(--panel); border:1px solid var(--line); border-radius:13px;
+    padding:15px 16px; box-shadow:var(--shadow);
+  }
+  .qa .q{font-weight:680; font-size:14px; margin-bottom:7px; color:var(--ink); text-wrap:balance}
+  .qa .q .qm{color:var(--later); font-weight:800; margin-right:6px}
+  .qa .a{font-size:13px; color:var(--ink-soft); line-height:1.55; margin:0}
+  .qa .a b{color:var(--ink)}
+  .qa .a .ex{display:block; margin-top:7px; padding:7px 10px; border-radius:8px;
+    background:var(--panel-2); border:1px solid var(--line); font-size:12.5px}
+
+  footer{margin-top:30px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-faint); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:space-between}
+  footer .mono{font-family:var(--mono)}
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+<div class="wrap">
+  <header>
+    <button class="toggle" id="tt" type="button" aria-label="라이트/다크 테마 전환">◐ 테마</button>
+    <div class="eyebrow">CEP PIPELINE ARCHITECTURE</div>
+    <h1>CEP 파이프라인 · As-Is → To-Be 비교 맵</h1>
+    <p class="lede"><code>brand_nonBrand</code> 분류기를 파이프라인 <b>맨 앞 게이트</b>로 끌어올려, 지금은 Phase&nbsp;1 내부에 숨어 있는 브랜드·카테고리 판단을 <b>명시적 분기</b>로 바꾼 구조입니다. 좌측이 현행(As-Is), 우측이 제안(To-Be)입니다.</p>
+  </header>
+
+  <div class="legend" aria-label="범례">
+    <span class="lg"><span class="dot new"></span>신규 노드 · 데이터 시드</span>
+    <span class="lg"><span class="dot moved"></span>이동 (내부 로직 → 명시 게이트)</span>
+    <span class="lg"><span class="dot later"></span>NotebookLM 방법론 반영</span>
+    <span class="lg"><span class="swatch"></span>흐름</span>
+    <span class="lg" style="font-family:var(--mono);font-size:11.5px">in → out = 입력 → 출력</span>
+  </div>
+
+  <div class="cols">
+    <!-- ============ AS-IS ============ -->
+    <section class="col asis" aria-label="현행 파이프라인">
+      <div class="col-head"><span class="tag asis">As-Is</span><h2>현행 · 선형 11단계</h2></div>
+      <p class="col-sub">진입점: <code>{{product_name}}</code> — 브랜드·제품·카테고리가 섞인 단일 입력</p>
+
+      <div class="flow">
+        <div class="node entry"><span class="pnum">IN</span><div class="body"><div class="nname">제품/카테고리 입력</div><div class="nio"><b>product_name</b> — 브랜드·제품·카테고리 혼합</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">1</span><div class="body"><div class="nname">기본 정보 사전 조사<span class="badge moved">내부 분기</span></div><div class="nio">product_name <span class="arr">→</span> 구조화 md · <b>프롬프트 내부</b>에서 제품/카테고리 판별</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">2</span><div class="body"><div class="nname">Product Anchors</div><div class="nio">basic research <span class="arr">→</span> <b>{category:[…]}</b> 벡터 키워드</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3</span><div class="body"><div class="nname">CEP Insight Research</div><div class="nio">product+category <span class="arr">→</span> 소비 맥락 md</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3-1</span><div class="body"><div class="nname">Latent Intent</div><div class="nio">P1+perspective <span class="arr">→</span> 잠재·인접 맥락</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">4</span><div class="body"><div class="nname">CEP Trigger Extraction</div><div class="nio">리서치 <span class="arr">→</span> [{situation, nanoIntents×3, evidence}]</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">5</span><div class="body"><div class="nname">KBF Generation</div><div class="nio">CEP <span class="arr">→</span> [{id, kbfs×1–3}]</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">5-1</span><div class="body"><div class="nname">KBF User Prompts</div><div class="nio">cep+intent+kbf <span class="arr">→</span> 질문 9개</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">6</span><div class="body"><div class="nname">MA Stage</div><div class="nio">brand+cep+kbf+AIO <span class="arr">→</span> MA 6단계 진단</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">7-1</span><div class="body"><div class="nname">User Prompt</div><div class="nio">cep+intents+kbfs <span class="arr">→</span> 자연어 질문 1개</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">7-2</span><div class="body"><div class="nname">AI Answer</div><div class="nio">질문 <span class="arr">→</span> 웹검색 답변 md</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">8</span><div class="body"><div class="nname">Content Guide</div><div class="nio">cep+prompt+answer+자사콘텐츠 <span class="arr">→</span> GEO 가이드 JSON</div></div></div>
+      </div>
+    </section>
+
+    <!-- ============ TO-BE ============ -->
+    <section class="col tobe" aria-label="제안 파이프라인">
+      <div class="col-head"><span class="tag tobe">To-Be</span><h2>제안 · 분류 게이트 시작</h2></div>
+      <p class="col-sub">진입점: <code>{{keyword}}</code> — 원시 검색어 → 분류 후 경로 분기</p>
+
+      <div class="flow">
+        <div class="node entry"><span class="pnum">IN</span><div class="body"><div class="nname">검색어 입력</div><div class="nio"><b>keyword</b> — 원시 검색어(브랜드 여부 미판정)</div></div></div>
+        <div class="link"></div>
+        <div class="node gate"><span class="pnum">G</span><div class="body"><div class="nname">brand_nonBrand 게이트<span class="badge new">신규</span></div><div class="nio">keyword <span class="arr">→</span> <b>{keyword, brand:bool, brand_part}</b></div></div></div>
+        <div class="link"></div>
+
+        <div class="split-note">↓ brand 값으로 경로 분기 ↓</div>
+        <div class="branch">
+          <div class="lane brand">
+            <div class="lh">◆ 브랜드 경로 · brand=true</div>
+            <p><code>brand_part</code>를 제품 앵커로 사용 → Phase&nbsp;1을 <b>specific-product</b> 모드로 고정</p>
+            <p class="mth">📓 검색 경로(전후 2~3홉) 분석 → 6W1H 장면 복원 → CEP는 <b>브랜드명 뺀 장면 문장</b>으로 확정 · brand_part는 <b>엔티티 갭 진단</b> 타깃</p>
+          </div>
+          <div class="lane nonbrand">
+            <div class="lh">◇ 논브랜드 경로 · brand=false</div>
+            <p>Phase&nbsp;1을 <b>category</b> 모드로 고정 · Phase&nbsp;2 앵커 비중↑</p>
+            <p class="mth">📓 5단계 플레이북: 생활 언어 수집 → 검색 흐름+6W1H → CEP 번역 → 우선순위(시장성·적합성·입증) → 장면 문장 확정</p>
+          </div>
+        </div>
+        <div class="link"></div>
+        <div class="node merge"><div class="body"><div class="nname">▽ 두 경로 합류 · 공용 CEP 엔진 ▽</div></div></div>
+        <div class="link"></div>
+
+        <div class="node"><span class="pnum">1</span><div class="body"><div class="nname">기본 정보 사전 조사<span class="badge moved">이동</span></div><div class="nio">모드 = <b>게이트 결과로 고정</b> (내부 분기 제거) <span class="arr">→</span> 구조화 md</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">2</span><div class="body"><div class="nname">Product Anchors<span class="badge new">시드</span></div><div class="nio">basic research <span class="seed">+ brand_part 앵커</span> <span class="arr">→</span> {category:[…]}</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3</span><div class="body"><div class="nname">CEP Insight Research</div><div class="nio">product+category <span class="arr">→</span> 소비 맥락 md</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3-1</span><div class="body"><div class="nname">Latent Intent</div><div class="nio">P1+perspective <span class="arr">→</span> 잠재·인접 맥락</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">4</span><div class="body"><div class="nname">CEP Trigger Extraction<span class="badge later">📓 방법론</span></div><div class="nio">리서치 <span class="arr">→</span> [{situation, nanoIntents×3, evidence}] · <span style="color:var(--later)">6W1H 장면 복원 · CEP=<b>브랜드명 뺀 장면 문장</b> · 우선순위 3기준(시장성·적합성·입증)</span></div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">5</span><div class="body"><div class="nname">KBF Generation</div><div class="nio">CEP <span class="arr">→</span> [{id, kbfs×1–3}]</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">5-1</span><div class="body"><div class="nname">KBF User Prompts</div><div class="nio">cep+intent+kbf <span class="arr">→</span> 질문 9개</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">6</span><div class="body"><div class="nname">MA Stage<span class="badge new">시드</span></div><div class="nio"><span class="seed">brand_part = 분석 타깃</span> · cep+kbf+AIO <span class="arr">→</span> MA 6단계</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">7-1</span><div class="body"><div class="nname">User Prompt</div><div class="nio">cep+intents+kbfs <span class="arr">→</span> 자연어 질문 1개</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">7-2</span><div class="body"><div class="nname">AI Answer</div><div class="nio">질문 <span class="arr">→</span> 웹검색 답변 md</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">8</span><div class="body"><div class="nname">Content Guide<span class="badge new">시드</span></div><div class="nio"><span class="seed">brand_part = 타깃 브랜드</span> · +답변+자사콘텐츠 <span class="arr">→</span> GEO 가이드 JSON</div></div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ DIFF SUMMARY ============ -->
+  <section class="diff">
+    <h3>핵심 변경점</h3>
+    <p class="dsub">As-Is → To-Be 사이에서 실제로 달라지는 지점만 정리했습니다.</p>
+    <div class="cards">
+      <div class="card k-new">
+        <div class="ct"><span class="dot new"></span>신규 게이트 추가</div>
+        <p class="cd"><code>brand_nonBrand</code> 분류기가 파이프라인 맨 앞에 붙습니다. 입력이 <code>product_name</code>(혼합)에서 <code>keyword</code>(원시 검색어)로 바뀌고, 게이트가 <code>{brand, brand_part}</code>를 뽑아 이후 경로를 결정합니다.</p>
+      </div>
+      <div class="card k-moved">
+        <div class="ct"><span class="dot moved"></span>암묵 → 명시 이동</div>
+        <p class="cd">지금 Phase&nbsp;1 프롬프트 내부에 숨어 있는 "제품 vs 카테고리" 판단이, 값싸고 감사 가능한 <b>사전 게이트</b>로 이동합니다. Phase&nbsp;1은 판별 대신 <b>고정된 모드</b>로 조사만 수행합니다.</p>
+      </div>
+      <div class="card k-seed">
+        <div class="ct"><span class="dot new"></span>brand_part 시드 전파</div>
+        <p class="cd">게이트가 추출한 <code>brand_part</code> 토큰이 <b>Phase&nbsp;2</b>(앵커), <b>Phase&nbsp;6</b>(분석 타깃 브랜드), <b>Phase&nbsp;8</b>(타깃 브랜드)로 시드처럼 흘러들어, 브랜드 경로에서 대상 지정이 명확해집니다.</p>
+      </div>
+      <div class="card k-later">
+        <div class="ct"><span class="dot later"></span>📓 NotebookLM 방법론 반영 (완료)</div>
+        <p class="cd">노트북 소스(<code>AI 브랜드 마케팅 - 초안 0616.pdf</code>) 질의 결과를 두 경로에 반영: <b>6W1H 장면 복원</b>, 5단계 발굴 플레이북, CEP는 <b>브랜드명 뺀 장면 문장</b>(브랜드 경로 포함), brand_part=엔티티 갭 진단 타깃, 프롬프트 비중 넌브랜디드 70:브랜디드 30. 상세: <code>description/notebooklm_cep_methodology.md</code></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EASY EXPLAIN ============ -->
+  <section class="explain">
+    <h3>왜 이렇게 만들었나 — 쉬운 해설</h3>
+    <p class="dsub">노트북 소스(AI 브랜드 마케팅 초안)의 논리를 쉬운 말로 풀었습니다. 자세한 근거는 <code style="font-family:var(--mono)">description/notebooklm_cep_methodology.md</code></p>
+    <div class="cards">
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>왜 키워드가 아니라 '장면(CEP)'을 만드나요?</div>
+        <p class="a">옛날 소비자는 검색창에 <b>"공기청정기 추천"</b>처럼 짧게 쳤지만, 지금은 AI에게 자기 상황을 통째로 말합니다. AI는 그 상황을 읽고 브랜드를 골라주죠. 그래서 우리도 키워드가 아니라 <b>"어떤 상황에서 이 제품이 필요해지는가"</b>라는 장면 단위로 만들어야 AI의 추천 방식과 맞아떨어집니다.
+        <span class="ex">예: "샤워하다 배수구에 머리카락이 잔뜩 보일 때" ← 이런 장면이 CEP</span></p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>브랜드 검색어로 시작하는데, 왜 CEP에서는 브랜드 이름을 빼나요?</div>
+        <p class="a">'갤럭시 S25'를 검색하는 사람은 <b>이미 갤럭시를 아는 사람</b>입니다. 그 사람들만 보면 "아직 우리를 모르는 새 손님이 어떤 상황에서 들어오는지"를 영영 못 봅니다. CEP를 만드는 목적이 바로 그 새 손님의 입구 찾기라서, 마지막 CEP 문장에서는 브랜드 이름을 뺍니다.
+        <span class="ex">힌트는 검색어 자체가 아니라 <b>앞뒤 검색 기록</b>에 있음: '시디즈' 앞에 '재택근무 목 통증'을 검색했다면 → 그게 진짜 장면</span></p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>그럼 뽑아낸 브랜드 이름(brand_part)은 어디에 쓰나요?</div>
+        <p class="a">만들 때는 빼고, <b>검사할 때</b> 씁니다. "AI야, ○○브랜드 이 상황에 어때?"라고 물어보면 AI가 우리 브랜드를 제대로 알고 있는지(엉뚱하게 '일반 샴푸'로 아는 건 아닌지) 확인할 수 있습니다. 그래서 brand_part는 Phase 6(MA 진단)과 Phase 8(콘텐츠 가이드)의 <b>분석 타깃</b>으로 흘러갑니다.</p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>왜 6W1H(언제·어디서·왜…)로 쪼개나요?</div>
+        <p class="a">AI는 질문 속 조건들을 하나씩 읽고 답을 고릅니다. <b>"좋은 마우스"</b>로는 AI가 뭘 추천할지 정할 수 없지만, <b>"손목 아픈 직장인이 사무실에서 쓸 무소음 마우스"</b>면 조건이 명확해지죠. 6W1H는 AI가 읽는 조건 칸(언제/어디서/누구와/왜/어떤 기분…)을 우리가 미리 채워 넣는 체크리스트입니다.</p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>CEP 후보 중에 뭘 남길지는 어떻게 정하나요?</div>
+        <p class="a">세 가지만 물으면 됩니다: ① <b>수요가 있나</b>(그 장면을 겪는 사람이 실제로 많은가) ② <b>우리가 답이 될 자격이 있나</b>(그 장면에 우리 제품이 정말 맞나) ③ <b>증거를 댈 수 있나</b>(리뷰·시험 결과 같은 근거가 있나). 하나라도 없으면 AI는 우리를 추천하지 않으니, 셋 다 되는 장면부터 잡습니다.</p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>왜 CEP를 큰 테마로 묶지 말라고 하나요?</div>
+        <p class="a">묶으면 뭘 고칠지 안 보이기 때문입니다. <b>"성능 테마에서 노출이 낮다"</b>는 진단으로는 할 일이 안 나오지만, <b>"게임 중 정밀 조작이 필요한 순간에 우리가 안 나온다"</b>면 → 상세페이지에 DPI 수치 넣기, 전문가 리뷰 받기처럼 바로 할 일이 나옵니다. 그래서 측정 단위는 CEP 그대로 둡니다.</p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>브랜드명 없는 질문 70% : 있는 질문 30%는 왜인가요?</div>
+        <p class="a">역할이 다릅니다. 브랜드명 <b>없는</b> 질문("탈모에 좋은 샴푸 뭐야?")에서 우리가 뽑히는 게 <b>진짜 성장</b>이고, 브랜드명 <b>있는</b> 질문("○○샴푸 어때?")은 AI의 인식 상태를 점검하는 용도입니다. 성장이 목적인 초기에는 전자를 더 많이(70%) 관리합니다.</p>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>그래서 이번 To-Be에서 실제로 바뀌는 건 뭔가요?</div>
+        <p class="a">대부분의 단계는 지금 그대로 둬도 소스 방법론과 맞습니다. 실질 변경은 두 가지: ① 맨 앞에 <b>brand_nonBrand 게이트</b>를 붙여 조사 모드를 미리 정하고 brand_part를 확보하는 것, ② <b>Phase 4</b>에 "CEP는 브랜드명 뺀 장면 문장으로" 규칙과 우선순위 평가를 넣는 것. 우선순위 평가는 검색량 같은 데이터가 같이 들어가야 해서(없으면 AI가 점수를 지어냄) 별도 검토 대상입니다.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <span>CEP_Phase · As-Is/To-Be 비교 맵 + NotebookLM 방법론 보강 (프롬프트 재작성은 후속)</span>
+    <span class="mono">source: description/0706.md · notebooklm_cep_methodology.md</span>
+  </footer>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('tt');
+    btn.addEventListener('click',function(){
+      var cur=root.getAttribute('data-theme');
+      if(!cur){ cur=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'; }
+      root.setAttribute('data-theme', cur==='dark'?'light':'dark');
+    });
+  })();
+</script>
