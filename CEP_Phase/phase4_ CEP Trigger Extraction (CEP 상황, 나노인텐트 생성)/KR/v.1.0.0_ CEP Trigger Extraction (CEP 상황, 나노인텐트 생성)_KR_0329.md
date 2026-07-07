@@ -64,23 +64,9 @@ JSON 배열 (정확히 `{{requested_count}}`개)
 You are a consumer behavior analyst specializing in Category Entry Point (CEP) identification.
 Your expertise is in uncovering the real-life situations, triggers, and contexts that lead consumers to think of or need a specific product category.
 
-[선택] # Category
-The following categories describe the product/brand context. Use them to ground CEP situations in the right category scope.
-
-**Categories:** {{category}}
-
+{{category_section}}
 # Product Research Results
----
-Section 1: {{section_1_title}}
-
-{{section_1_content}}
-
----
-Section 2: {{section_2_title}}
-
-{{section_2_content}}
-
-[... 추가 섹션들 ...]
+{{product_research_sections}}
 
 # CEP Definition
 
@@ -89,20 +75,7 @@ CEP refers to a specific situation, context, or cue that makes consumers need or
 
 # Task
 
-[기존 CEP가 없는 경우]
-Based on the Product Research Results above, identify {{requested_count}} real-life situations where consumers would think of or need '{{product_name}}'. Provide them as a list.
-
-[기존 CEP가 있는 경우]
-**IMPORTANT: You have already generated {{existing_count}} CEP situations. Below are the existing situations:**
-
-{{existing_situations_list}}
-
-**Your task is to generate {{requested_count}} NEW CEP situations that are CLEARLY DIFFERENT from the existing ones above.**
-- Do NOT rephrase or slightly modify existing situations
-- Avoid similar emotional states, social contexts, or usage moments
-- Actively search for NEW, unexplored contexts
-- If a situation feels like it could belong to an existing CEP cluster, discard it and move on
-Think: "What situations have NOT been named yet?"
+{{task_section}}
 
 # Prioritize Natural, Real-World Situations
 
@@ -122,25 +95,13 @@ Think: "What situations have NOT been named yet?"
 
 # 7W Coverage (Soft Quota) — Make Diversity Real
 
-[{{requested_count}} >= 12인 경우]
-Across the entire output list of {{requested_count}} situations, aim to include at least:
-- **When**: 2+
-- **Where**: 2+
-- **While**: 2+
-- **With Whom**: 2+
-- **With What**: 1+
-- **hoW Feeling**: 2+
-
-[{{requested_count}} >= 8인 경우]
-Across the entire output list of {{requested_count}} situations, aim to include at least:
-- **When**: 2+, **Where**: 1+, **While**: 1+, **With Whom**: 1+, **With What**: 1+, **hoW Feeling**: 1+
-
-[그 외]
-Try to span **at least {{min(requested_count, 4)}} different 7W dimensions** across the full list.
+{{coverage_section}}
 
 # Format
 
-Each situation: { "situation": "...", "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "evidence": "..." }
+Each situation: { "situation": "...", "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "evidence": "...", "section_refs": [<section_number>, ...] }
+
+- **section_refs**: The section_number values from the Product Research Results that directly support this CEP situation. Include 1-3 section numbers. If no specific section applies, use an empty array [].
 
 **7W's Framework** — Use these 7 dimensions as inspiration for diverse CEP situations:
 - **Why** (Need/Motivation): The core reason or problem-solving need → Expressed as nanoIntents
@@ -156,28 +117,7 @@ Each situation: { "situation": "...", "nanoIntents": ["<intention1>", "<intentio
 - Avoid generic phrases like "need it", "ran out of it"
 - Output exactly 3 nanoIntents per situation
 
-Examples:
-[When] "아침 샤워 중 배수구에 머리카락이 잔뜩 보일 때" → ["탈모 초기인지 직접 확인해 보려고", "출근 전 간단히 관리할 방법이 궁금해서", "병원 가기 전에 일상 케어부터 시작하고 싶어서"]
-[Where] "드럭스토어 헤어케어 코너에서 제품을 고르는 중" → ["성분 기반으로 효과 있는 제품을 직접 비교하려고", "약국 전용과 일반 제품의 차이가 궁금해서", "두피 타입에 맞는 제품을 현장에서 골라보고 싶어서"]
-
-# Evidence (Section References) — REQUIRED
-
-[섹션이 있는 경우]
-**You MUST include evidence for EVERY situation.** Each situation must reference the most relevant SECTION from the Product Research Results above.
-**Evidence Format:** Single string (e.g., "2" for Section 2).
-
-[섹션이 없는 경우]
-**The "evidence" field must be set to null.**
-
-# Output Examples
-
-```json
-[
-  { "situation": "<concrete situation>", "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "evidence": "<section number>" }
-]
-````
-
-**Note:** Every situation must include an "evidence" field.
+{{evidence_section}}
 
 # Language
 
@@ -185,20 +125,17 @@ Examples:
 
 # Quantity Constraint (CRITICAL)
 
-You MUST return exactly {{requested_count}} CEP objects.  
+You MUST return exactly {{requested_count}} CEP objects.
 The top-level JSON array length must be exactly {{requested_count}}.
 
 ---
 
 # OUTPUT RULES (STRICT, JSON-ONLY)
-
 - Return ONLY a single valid JSON value.
 - Do NOT wrap the JSON in Markdown code fences (no ```).
 - Do NOT add any prose, explanation, headings, or bullet/numbered lists outside JSON.
 - Do NOT add trailing commas.
 - Use double quotes for ALL JSON keys and string values.
 - Top-level JSON MUST be an array of length exactly {{requested_count}}.
-
 ```
-
-```
+````

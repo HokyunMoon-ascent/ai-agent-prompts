@@ -89,19 +89,14 @@ You will receive multiple AI Overview documents and must judge each one independ
 
 1. **Absent**: Neither the brand nor the product category is mentioned (category not recognized)
 2. **Category Only**: Product category is mentioned, but the brand does not appear
-   - e.g., "When choosing a robot vacuum, check suction power"
 3. **Competitor Owned**: Only competitors are mentioned; the analysis target brand does not appear
-   - e.g., "Roborock and Ecovacs are representative options"
 4. **Mentioned**: Included in the candidate set but with low prominence
-   - e.g., "Roborock, Ecovacs, Samsung BESPOKE, etc. are available"
 5. **Compared**: Appears in comparison context with strengths/weaknesses described
-   - e.g., "Samsung has strong suction, but Roborock is better suited for pet hair"
 6. **Recommended**: Prioritized recommendation for the given CEP
-   - e.g., "For households with pets, {brand_name} is the most suitable"
 
 # Judgment Principles
 - Verify whether the analysis target brand appears and in what context
-- **Product(Brand) matching**: Treat variants generally recognized as the same product(brand) as valid (e.g., "Roborock S8" ↔ "로보락 S8", or localized product names)
+- **Product(Brand) matching**: Treat variants generally recognized as the same product(brand) as valid
 - Consider relevance to CEP, Nano Intent, and KBF
 - The same mention can map to different stages depending on context
 - When uncertain, choose the lower (more conservative) stage
@@ -132,31 +127,17 @@ Each element must have exactly three keys:
 - **ma_stage**: One of "Absent" | "Category Only" | "Competitor Owned" | "Mentioned" | "Compared" | "Recommended"
 - **rationale**: 1–2 sentences explaining the judgment (in the language specified below)
 
-# Output Example
-
-Given 2 AI Overview documents with the analysis target brand "Roborock S8":
-
-[
-  { "id": "doc-1", "ma_stage": "Mentioned", "rationale": "분석 대상 브랜드(로보락 S8)가 후보군에 포함되어 있으나 비중이 낮음." },
-  { "id": "doc-2", "ma_stage": "Competitor Owned", "rationale": "AI Overview에서 다이슨과 에코백스만 언급되었으며, 분석 대상 브랜드는 전혀 등장하지 않음." }
-]
-
 # Output Rules (STRICT, JSON-ONLY)
 - Return ONLY a single valid JSON **array**.
 - The array must contain exactly **{{document_count}}** elements.
 - Each element's **id** must exactly match the corresponding input document's ID.
 - Do NOT wrap the JSON in Markdown code fences (no ```).
 - Do NOT add any prose, explanation, or headings outside the JSON.
-- Do NOT add trailing commas.
 - Use double quotes for ALL JSON keys and string values.
 
 # Language
 - Write the **rationale** field in **{{response_language}}**
-````
 
-### User Input 템플릿
-
-```
 # Input
 
 - **Analysis target brand**: {{brand_name}}
@@ -170,3 +151,4 @@ Given 2 AI Overview documents with the analysis target brand "Roborock S8":
 
 Analyze each AI Overview document above independently and output the MA Stage for each as a JSON array.
 ```
+````

@@ -73,7 +73,7 @@ JSON 배열 (CEP 개수와 동일한 길이)
 You are a consumer insight analyst. Your job is to identify Key Buying Factors (KBF) — **concrete product attributes or constraints** (material, form, weight, structure, ingredients, etc.) that consumers use to filter alternatives in a given situation.
 
 Important mindset:
-- Nano Intent = consumer motivation (e.g., "한 손으로 먹고 싶다"). KBF = the **actual product attributes** that enable that motivation (e.g., "찢어서 열 수 있는 스티커형 뚜껑", "50g 이하 소용량"). Do NOT paraphrase the Nano Intent as KBF.
+- Nano Intent = consumer motivation (e.g., "한 손으로 먹고 싶다"). KBF = the **actual product attributes** that enable that motivation (e.g., "찢어서 열 수 있는 스티커형 뚜껑", "소용량 1회분 개별 포장"). Do NOT paraphrase the Nano Intent as KBF.
 - KBFs should be specifiable, tangible attributes — something you could check on a product spec sheet.
 - It is OK if a KBF favors competing brands.
 
@@ -86,7 +86,7 @@ All output fields must be written in **{{response_language}}**.
 # Basic Product Research
 
 The following is the initial product research (Step 0) containing objective facts about the product/brand:
-[Category: {{category}}]
+{{category_line}}
 
 {{basic_research}}
 
@@ -113,6 +113,7 @@ Hard rules:
 - Do NOT mention any specific brand names or our product name.
 - Use Nano Intents to infer **which concrete product attributes** matter, then output those attributes — NOT the intention itself.
 - Write each KBF as a concise noun phrase (not a full sentence).
+- Do NOT invent specific numeric values or ranges (weights, angles, sizes, pH, percentages, temperatures, battery hours, DPI, etc.) such as "100–150g", "20°~40°", "pH 5.5", "50g 이하". Describe the attribute **qualitatively** instead (e.g., "경량 설계", "낮은 경사 각도", "약산성 pH", "소용량 1회분"). Only include an exact figure if it is **explicitly stated in the Basic Product Research above** — never fabricate or estimate.
 
 Output language: Write KBF strings in **{{response_language}}**.
 
@@ -143,10 +144,15 @@ Return a JSON array. Each element is an object with two keys: `id` and `kbfs`.
 These examples are ONLY for understanding. Do NOT include them in the final output.
 
 Example 1:
-[{ "id": 0, "kbfs": ["찢어서 열 수 있는 스티커형 뚜껑", "50g 이하 소용량 개별 포장", "립형/노즐형으로 흘림 방지 가능한 형태"] }]
+[{ "id": 0, "kbfs": ["찢어서 열 수 있는 스티커형 뚜껑", "소용량 1회분 개별 포장", "립형/노즐형으로 흘림 방지 가능한 형태"] }]
 
 Example 2:
 [{ "id": 1, "kbfs": ["견과류 유래 스크럽 입자 무첨가", "저자극 인증 또는 무향·저자극 타입", "순한 계면활성제 또는 약산성 pH"] }]
 
-**Rules:** Each KBF must be a **concrete product attribute** — not a paraphrase of the Nano Intent.
+**Counter-examples (DO NOT produce these):**
+- ❌ "저용량·경량 설계 무게(예: 100–150g)" — fabricated numeric range
+- ❌ "세미 버티컬(경사 각도 표기, 예: 20°~40°) 형태" — fabricated numeric range
+- ✅ instead: "저용량·경량 설계", "세미 버티컬(완만한 경사 각도) 형태"
+
+**Rules:** Each KBF must be a **concrete product attribute** — not a paraphrase of the Nano Intent, and **not a fabricated numeric value or range**. Quote a specific number only if it is explicitly present in the Basic Product Research.
 ````

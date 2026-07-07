@@ -8,29 +8,39 @@ CEP, 나노인텐트, KBF 메타데이터를 기반으로 실제 사용자가 AI
 
 ### 입력 변수
 
-| 변수                        | 설명                                | 예시                        |
-| --------------------------- | ----------------------------------- | --------------------------- |
-| `{{cep}}`                   | CEP 상황 (`card.cep`)               | `아침 샤워 후 머리 빠질 때` |
-| `{{nano_intent}}`           | 나노인텐트 (`card.nano_intent`)     | `탈모 초기 자가 진단`       |
-| `{{kbf}}`                   | 카드의 모든 KBF를 `", "` 로 연결한 문자열 (`", ".join(kbf_list)`) | `약산성 pH 제품, 무향, 저자극` |
-| `{{response_language_label}}` | 응답 언어 라벨 (locale KR/JP/US 기준, 기본값 Korean) | `Korean` / `Japanese` / `English` |
+| 변수                          | 설명                                                              | 예시                              |
+| ----------------------------- | ----------------------------------------------------------------- | --------------------------------- |
+| `{{cep}}`                     | CEP 상황 (`card.cep`)                                             | `아침 샤워 후 머리 빠질 때`       |
+| `{{nano_intent}}`             | 나노인텐트 (`card.nano_intent`)                                   | `탈모 초기 자가 진단`             |
+| `{{kbf}}`                     | 카드의 모든 KBF를 `", "` 로 연결한 문자열 (`", ".join(kbf_list)`) | `약산성 pH 제품, 무향, 저자극`    |
+| `{{response_language_label}}` | 응답 언어 라벨 (locale KR/JP/US 기준, 기본값 Korean)              | `Korean` / `Japanese` / `English` |
 
 ### 출력 형식
 
 JSON 배열 (정확히 9개 — KBF당 3개 × 3 KBF)
 
 ```json
-["질문1", "질문2", "질문3", "질문4", "질문5", "질문6", "질문7", "질문8", "질문9"]
+[
+  "질문1",
+  "질문2",
+  "질문3",
+  "질문4",
+  "질문5",
+  "질문6",
+  "질문7",
+  "질문8",
+  "질문9"
+]
 ```
 
 ### 요청 모델 및 파라미터
 
-| 파라미터    | 설정값                                | 비고                                  |
-| ----------- | ------------------------------------- | ------------------------------------- |
-| model       | `'gpt-5.4-nano'`                      | 고정                                  |
-| input       | `buildKbfUserPromptsPrompt(...)` 결과 문자열 | CEP / Nano Intent / KBF / 출력 언어 반영 |
-| text        | `{ format: { type: 'text' } }`        | 일반 텍스트 출력                      |
-| reasoning   | `{ effort: 'none' }`                  | 추론 effort 최소                      |
+| 파라미터  | 설정값                                       | 비고                                     |
+| --------- | -------------------------------------------- | ---------------------------------------- |
+| model     | `'gpt-5.4-nano'`                             | 고정                                     |
+| input     | `buildKbfUserPromptsPrompt(...)` 결과 문자열 | CEP / Nano Intent / KBF / 출력 언어 반영 |
+| text      | `{ format: { type: 'text' } }`               | 일반 텍스트 출력                         |
+| reasoning | `{ effort: 'none' }`                         | 추론 effort 최소                         |
 
 ### 코드 위치
 
@@ -56,5 +66,5 @@ Input:
 Output language: {{response_language_label}}
 
 Response format (output ONLY a JSON array, nothing else):
-["question1", "question2", ... , "question9"]
+["question1", "question2", "question3", "question4", "question5", "question6", "question7", "question8", "question9"]
 ```

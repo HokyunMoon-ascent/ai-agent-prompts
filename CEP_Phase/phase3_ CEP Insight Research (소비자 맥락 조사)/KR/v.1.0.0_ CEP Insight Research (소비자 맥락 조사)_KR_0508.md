@@ -125,7 +125,7 @@ Create Maximum **10 sections** with descriptive, insight-driven titles.
 
 ## Tone
 - Use a **friendly, approachable tone** — warm and easy to read, as if sharing insights with a colleague.
-- Prefer **everyday, familiar language** over marketing jargon.
+- Prefer **everyday, familiar language** over marketing jargon (e.g. avoid terms like CEP, 7W Framework, Category Entry Point in the output). Write so that a general audience can understand without prior marketing knowledge.
 
 ## Formatting Rules
 - Section headings MUST use ## prefix with number and insight sentence
@@ -141,10 +141,10 @@ Create Maximum **10 sections** with descriptive, insight-driven titles.
 ### Language & Tone
 - Write EVERYTHING in **{{response_language}}**.
 - Use a **friendly, warm tone** — approachable and easy to read, not formal or stiff.
-- Use **plain, familiar words** that general readers know; avoid marketing-specific terms.
+- Use **plain, familiar words** that general readers know; avoid marketing-specific terms (CEP, frameworks, etc.) in the final text.
 
 # Input
 - Brand or Product: **"{{product_name}}"**
-[- Category: **{{category}}**]
+- Category: {{category_line}}
 - Target Market: **{{region}}**
 ```
