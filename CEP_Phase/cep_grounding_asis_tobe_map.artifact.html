@@ -1,0 +1,351 @@
+<title>CEP 파인더 Grounding 단계 도입 · As-Is → To-Be</title>
+<style>
+  :root{
+    --bg:#eceff5; --panel:#ffffff; --panel-2:#f6f8fc;
+    --ink:#151e2b; --ink-soft:#4a586b; --ink-faint:#8391a6;
+    --line:#d7dee9; --line-strong:#bcc7d6;
+    --accent:#2f6df6; --accent-soft:#e6eeff;
+    --new:#1a9d59; --new-soft:#e0f4e9;
+    --moved:#bd7412; --moved-soft:#f8ecd6;
+    --bad:#c73f3f; --bad-soft:#fbe7e7;
+    --shadow:0 1px 2px rgba(20,32,52,.06),0 6px 18px rgba(20,32,52,.06);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d131e; --panel:#161f2d; --panel-2:#1a2434;
+      --ink:#e7edf6; --ink-soft:#aab7ca; --ink-faint:#6e7d94;
+      --line:#2a3648; --line-strong:#3a4a61;
+      --accent:#5f8dff; --accent-soft:#1a2a49;
+      --new:#3ccf8b; --new-soft:#123528;
+      --moved:#e0a63a; --moved-soft:#3a2f14;
+      --bad:#ef7070; --bad-soft:#401d1d;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d131e; --panel:#161f2d; --panel-2:#1a2434;
+    --ink:#e7edf6; --ink-soft:#aab7ca; --ink-faint:#6e7d94;
+    --line:#2a3648; --line-strong:#3a4a61;
+    --accent:#5f8dff; --accent-soft:#1a2a49;
+    --new:#3ccf8b; --new-soft:#123528;
+    --moved:#e0a63a; --moved-soft:#3a2f14;
+    --bad:#ef7070; --bad-soft:#401d1d;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#eceff5; --panel:#ffffff; --panel-2:#f6f8fc;
+    --ink:#151e2b; --ink-soft:#4a586b; --ink-faint:#8391a6;
+    --line:#d7dee9; --line-strong:#bcc7d6;
+    --accent:#2f6df6; --accent-soft:#e6eeff;
+    --new:#1a9d59; --new-soft:#e0f4e9;
+    --moved:#bd7412; --moved-soft:#f8ecd6;
+    --bad:#c73f3f; --bad-soft:#fbe7e7;
+    --shadow:0 1px 2px rgba(20,32,52,.06),0 6px 18px rgba(20,32,52,.06);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.5;
+    font-size:15px; letter-spacing:-.005em;
+    padding:clamp(16px,3.5vw,48px);
+  }
+  .wrap{max-width:1180px; margin:0 auto}
+
+  header{position:relative}
+  .eyebrow{font-family:var(--mono); font-size:11.5px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--accent); font-weight:600}
+  h1{font-size:clamp(24px,3.4vw,36px); line-height:1.12; margin:.35em 0 .3em;
+    font-weight:760; letter-spacing:-.02em; text-wrap:balance}
+  .lede{color:var(--ink-soft); max-width:66ch; margin:0}
+  .lede code, .col-sub code, .cd code, .a code{font-family:var(--mono); font-size:.86em; background:var(--panel-2);
+    border:1px solid var(--line); border-radius:5px; padding:.05em .4em; color:var(--ink)}
+
+  .toggle{position:absolute; top:0; right:0; font:inherit; font-size:12.5px; color:var(--ink-soft);
+    background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:7px 13px; cursor:pointer; box-shadow:var(--shadow);
+    display:inline-flex; align-items:center; gap:6px}
+  .toggle:hover{border-color:var(--line-strong); color:var(--ink)}
+  .toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  .legend{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center;
+    margin:22px 0 6px; padding:12px 15px;
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow)}
+  .legend .lg{display:inline-flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft)}
+  .dot{width:11px; height:11px; border-radius:3px; flex:none}
+  .dot.new{background:var(--new)} .dot.moved{background:var(--moved)} .dot.bad{background:var(--bad)}
+
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:22px; align-items:start}
+  @media (max-width:860px){ .cols{grid-template-columns:1fr} }
+  .col{background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:18px 18px 22px; box-shadow:var(--shadow); min-width:0}
+  .col.tobe{background:linear-gradient(180deg,var(--new-soft),transparent 120px),var(--panel)}
+  .col-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px}
+  .col-head h2{font-size:19px; margin:0; font-weight:740; letter-spacing:-.01em}
+  .tag{font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.1em;
+    padding:3px 9px; border-radius:999px; text-transform:uppercase}
+  .tag.asis{background:var(--panel-2); border:1px solid var(--line-strong); color:var(--ink-soft)}
+  .tag.tobe{background:var(--new); color:#fff}
+  .col-sub{color:var(--ink-faint); font-size:13px; margin:2px 0 14px}
+
+  .flow{display:flex; flex-direction:column}
+  .node{display:flex; gap:11px; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:11px; padding:11px 13px; position:relative}
+  .node.dim{opacity:.55}
+  .node.hot{border-color:var(--bad); background:linear-gradient(90deg,var(--bad-soft),var(--panel-2) 70%)}
+  .node.newnode{border-color:var(--new); background:linear-gradient(90deg,var(--new-soft),var(--panel-2) 75%)}
+  .pnum{font-family:var(--mono); font-size:11px; font-weight:700; color:var(--accent);
+    background:var(--accent-soft); border-radius:7px; padding:3px 7px; height:fit-content; flex:none}
+  .node.hot .pnum{color:var(--bad); background:var(--bad-soft)}
+  .node.newnode .pnum{color:var(--new); background:var(--new-soft)}
+  .nname{font-weight:680; font-size:14px}
+  .nio{font-size:12.5px; color:var(--ink-soft); margin-top:2px; line-height:1.55}
+  .nio b{color:var(--ink)}
+  .nio .arr{color:var(--ink-faint)}
+  .badge{display:inline-block; font-family:var(--mono); font-size:10px; font-weight:700;
+    letter-spacing:.06em; border-radius:6px; padding:2px 7px; margin-left:7px; vertical-align:1px}
+  .badge.bad{background:var(--bad-soft); color:var(--bad)}
+  .badge.new{background:var(--new-soft); color:var(--new)}
+  .badge.moved{background:var(--moved-soft); color:var(--moved)}
+  .link{width:2px; height:16px; background:var(--line-strong); margin:2px 0 2px 24px}
+  .link.chain{background:var(--new); width:3px}
+  .chainlabel{font-family:var(--mono); font-size:10.5px; color:var(--new); margin:0 0 2px 34px}
+
+  /* schema compare */
+  .schema{margin-top:34px}
+  .schema h3, .diff h3, .evi h3, .explain h3{font-size:18px; margin:0 0 3px; font-weight:720; letter-spacing:-.01em}
+  .dsub{color:var(--ink-faint); font-size:13px; margin:0 0 16px}
+  .schcols{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:860px){ .schcols{grid-template-columns:1fr} }
+  .sch{background:var(--panel); border:1px solid var(--line); border-radius:13px; box-shadow:var(--shadow); overflow:hidden}
+  .sch .sh{padding:10px 15px; font-weight:680; font-size:13.5px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:8px}
+  .sch.tobe .sh{color:var(--new)}
+  .sch pre{margin:0; padding:14px 15px; overflow-x:auto; font-family:var(--mono);
+    font-size:12px; line-height:1.65; color:var(--ink)}
+  .sch .hl{color:var(--new); font-weight:700}
+  .sch .rm{color:var(--bad)}
+  .sch .cm{color:var(--ink-faint)}
+
+  /* diff cards */
+  .diff{margin-top:34px}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:13px;
+    padding:15px 16px; box-shadow:var(--shadow); border-left:4px solid var(--line-strong)}
+  .card.k-new{border-left-color:var(--new)}
+  .card.k-moved{border-left-color:var(--moved)}
+  .card.k-bad{border-left-color:var(--bad)}
+  .card .ct{display:flex; align-items:center; gap:8px; font-weight:680; font-size:14px; margin-bottom:6px}
+  .card .cd{font-size:13px; color:var(--ink-soft); line-height:1.55; margin:0}
+  .card .cd b{color:var(--ink)}
+
+  /* evidence section */
+  .evi{margin-top:34px}
+  .types{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:16px}
+  .tp{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 15px; box-shadow:var(--shadow)}
+  .tp .tt{font-weight:700; font-size:13.5px; color:var(--bad); margin-bottom:4px}
+  .tp .td{font-size:12.5px; color:var(--ink-soft); line-height:1.55}
+  .tp .td b{color:var(--ink)}
+  .ba{background:var(--panel); border:1px solid var(--line); border-radius:13px; box-shadow:var(--shadow);
+    padding:16px 18px}
+  .ba .bh{font-weight:700; font-size:14px; margin-bottom:10px}
+  .ba p{font-size:14px; line-height:1.8; margin:6px 0}
+  .ba .lab{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:var(--ink-faint);
+    text-transform:uppercase; display:block; margin-top:12px}
+  mark.cut{background:var(--bad-soft); color:var(--bad); text-decoration:line-through;
+    text-decoration-thickness:1.5px; padding:1px 4px; border-radius:4px}
+  mark.keep{background:var(--new-soft); color:inherit; padding:1px 4px; border-radius:4px;
+    box-shadow:inset 0 -1.5px 0 var(--new)}
+
+  /* qa */
+  .explain{margin-top:34px}
+  .qa{background:var(--panel); border:1px solid var(--line); border-radius:13px;
+    padding:15px 16px; box-shadow:var(--shadow)}
+  .qa .q{font-weight:680; font-size:14px; margin-bottom:7px; text-wrap:balance}
+  .qa .q .qm{color:var(--accent); font-weight:800; margin-right:6px}
+  .qa .a{font-size:13px; color:var(--ink-soft); line-height:1.55; margin:0}
+  .qa .a b{color:var(--ink)}
+
+  footer{margin-top:30px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-faint); font-size:12px; display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:space-between}
+  footer .mono{font-family:var(--mono)}
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CEP PIPELINE · GROUNDING</div>
+    <h1>Grounding 단계 도입 · As-Is → To-Be</h1>
+    <p class="lede">Web Search(Phase 3) 직후에 <b>증거 분해 단계(Phase 3.5)</b>를 신설해 verbatim 인용을 <code>w7 · nano_intent · KBF · RTB · source_ref</code>로 구조화하고, Phase 4는 그 <b>증거 유닛만으로 CEP를 조립</b>하게 바꾸는 제안입니다. Hallucination_test 검증(project 1328 등)에서 사후 교정(repropose)으로 수행하던 접지 작업을 <b>사전 예방</b>으로 옮깁니다.</p>
+  </header>
+
+  <div class="legend" aria-label="범례">
+    <span class="lg"><span class="dot bad"></span>환각 유입 지점</span>
+    <span class="lg"><span class="dot new"></span>신규 단계 · grounding 체인</span>
+    <span class="lg"><span class="dot moved"></span>역할 변경 (생성 → 조립/확정)</span>
+    <span class="lg" style="font-family:var(--mono);font-size:11.5px">in → out = 입력 → 출력</span>
+  </div>
+
+  <div class="cols">
+    <!-- ============ AS-IS ============ -->
+    <section class="col asis" aria-label="현행 파이프라인">
+      <div class="col-head"><span class="tag asis">As-Is</span><h2>현행 · 산문 → 카드 직행</h2></div>
+      <p class="col-sub">근거 연결은 섹션 번호(<code>section_refs</code>)뿐 — 인용이 카드까지 전달되지 않음</p>
+
+      <div class="flow">
+        <div class="node"><span class="pnum">3</span><div class="body"><div class="nname">CEP Insight Research <b style="font-family:var(--mono);font-size:10.5px;color:var(--accent)">web_search ON</b></div><div class="nio">product+category <span class="arr">→</span> <b>산문 마크다운</b> (섹션 ≤10 × 문단 3) · 인용은 "권장" 수준, 구조화 안 됨</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3-1</span><div class="body"><div class="nname">Latent Intent</div><div class="nio">P1+perspective <span class="arr">→</span> 잠재·인접 맥락 (산문)</div></div></div>
+        <div class="link"></div>
+        <div class="node hot"><span class="pnum">4</span><div class="body"><div class="nname">CEP Trigger Extraction<span class="badge bad">환각 유입</span></div><div class="nio">산문 <span class="arr">→</span> [{situation, nanoIntents×3, evidence, section_refs}]<br>산문을 읽고 <b>자유 생성</b> — 소스에 없는 구체화(시간·장소·발화·행동)가 여기서 발생. tools 없음 · reasoning none이라 자체 검증 불가</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">5</span><div class="body"><div class="nname">KBF Generation</div><div class="nio">CEP+basic research <span class="arr">→</span> [{id, kbfs×1–3}] · 숫자 날조 금지 규칙은 있으나 quote 근거 없음</div></div></div>
+        <div class="link"></div>
+        <div class="node dim"><span class="pnum">5-1…8</span><div class="body"><div class="nname">이후 단계 (변경 없음)</div><div class="nio">KBF User Prompts → MA Stage → User Prompt → AI Answer → Content Guide</div></div></div>
+        <div class="link"></div>
+        <div class="node hot"><span class="pnum">검증</span><div class="body"><div class="nname">사후 검증 + repropose<span class="badge bad">사후 교정</span></div><div class="nio">완성 카드를 원문과 대조 <span class="arr">→</span> fail/warning <span class="arr">→</span> 사람이 재제안 작업 — 1328에서 10장 중 <b>6장</b>이 여기서 걸림</div></div></div>
+      </div>
+    </section>
+
+    <!-- ============ TO-BE ============ -->
+    <section class="col tobe" aria-label="제안 파이프라인">
+      <div class="col-head"><span class="tag tobe">To-Be</span><h2>제안 · 인용 → 유닛 → 조립</h2></div>
+      <p class="col-sub">quote가 card까지 끊기지 않고 전달되는 <b>grounding 체인</b></p>
+
+      <div class="flow">
+        <div class="node"><span class="pnum">3</span><div class="body"><div class="nname">CEP Insight Research <b style="font-family:var(--mono);font-size:10.5px;color:var(--accent)">web_search ON</b></div><div class="nio">변경 없음 — 산문 출력 유지 (인용 보존은 P3.5가 담당)</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">3-1</span><div class="body"><div class="nname">Latent Intent</div><div class="nio">변경 없음 · 출력을 P3.5의 선택 입력으로 추가 공급</div></div></div>
+        <div class="link chain"></div>
+        <p class="chainlabel">verbatim quote 보존 ↓</p>
+        <div class="node newnode"><span class="pnum">3.5</span><div class="body"><div class="nname">Evidence Decomposition<span class="badge new">신규</span></div><div class="nio">산문+sources <span class="arr">→</span> <b>증거 유닛 JSON</b><br>[{unit_id, source_ref:"§N", <b>quote(verbatim)</b>, url, w7 부분필드, nano_intent 후보, kbf_hints, <b>rtb</b>}]<br>tools 없음 · 저비용 — 4대 환각 유형 명시적 금지</div></div></div>
+        <div class="link chain"></div>
+        <p class="chainlabel">유닛 밖 표현 생성 금지 ↓</p>
+        <div class="node"><span class="pnum">4</span><div class="body"><div class="nname">CEP Trigger Extraction<span class="badge moved">조립으로 축소</span></div><div class="nio">증거 유닛 <span class="arr">→</span> [{situation, <b>w7, kbf_hints, rtb, source_ref, evidence_unit_ids</b>, nanoIntents×3}]<br>같은 §N 유닛 1–3개를 <b>선택·결합</b> — 모든 구체어가 quote에 대응. 다양성·수량 제약은 유지</div></div></div>
+        <div class="link chain"></div>
+        <div class="node"><span class="pnum">5</span><div class="body"><div class="nname">KBF Generation<span class="badge moved">확정으로 축소</span></div><div class="nio">kbf_hints+basic research 대조 <span class="arr">→</span> KBF 확정 · 숫자 날조 금지 규칙 유지 <i style="color:var(--ink-faint)">(파일 개정은 후속)</i></div></div></div>
+        <div class="link"></div>
+        <div class="node dim"><span class="pnum">5-1…8</span><div class="body"><div class="nname">이후 단계 (변경 없음)</div><div class="nio">단, 카드에 실린 rtb·source_ref를 P6(MA)·P8(콘텐츠 가이드)이 그대로 재사용 가능</div></div></div>
+        <div class="link"></div>
+        <div class="node"><span class="pnum">검증</span><div class="body"><div class="nname">사후 검증<span class="badge new">회귀 감시로 이동</span></div><div class="nio">교정 장치가 아니라 <b>회귀 감시</b> — fail/warning은 P3.5·P4 프롬프트 버그 신호로 취급</div></div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ SCHEMA ============ -->
+  <section class="schema">
+    <h3>데이터 스키마 비교 — Phase 4 출력</h3>
+    <p class="dsub">To-Be 스키마는 사후 repropose 산출물(<code>repropose/1328.json</code>)의 카드 구조를 파이프라인 정식 스키마로 승격한 것입니다.</p>
+    <div class="schcols">
+      <div class="sch">
+        <div class="sh"><span class="dot bad"></span>As-Is — 근거가 번호로만 남음</div>
+        <pre>{
+  "situation": "재택근무를 시작한 <span class="rm">첫 주</span>, …
+     <span class="rm">'손목도 마우스로 더 안 맞는 것 같다'</span>…",
+  "nanoIntents": ["…", "…", "…"],
+  "evidence": "2",
+  "section_refs": [1]   <span class="cm">// 섹션 번호뿐 —</span>
+                        <span class="cm">// 어떤 문장이 근거인지 소실</span>
+}</pre>
+      </div>
+      <div class="sch tobe">
+        <div class="sh"><span class="dot new"></span>To-Be — quote가 카드까지 전달</div>
+        <pre>{
+  "situation": "재택근무로 혼자 오래 작업하면서 …
+     '마우스까지 인체공학적으로 못 맞춘다'…",
+  <span class="hl">"w7"</span>: { "why": "…", "where": "…",
+          "while_": "…", "how_feeling": "…" },
+  "nanoIntents": ["…", "…", "…"],
+  <span class="hl">"kbf_hints"</span>: ["수직(핸드셰이크) 그립 각도"],
+  <span class="hl">"rtb"</span>: "\"소파나 침대 옆에 노트북을 두고 …
+     꺾이는 느낌이 반복돼요\" (hankyung)",
+  <span class="hl">"source_ref"</span>: "§1",
+  <span class="hl">"evidence_unit_ids"</span>: [1, 2]
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIFF ============ -->
+  <section class="diff">
+    <h3>핵심 변경점</h3>
+    <p class="dsub">As-Is → To-Be 사이에서 실제로 달라지는 지점만 정리했습니다.</p>
+    <div class="cards">
+      <div class="card k-new">
+        <div class="ct"><span class="dot new"></span>신설 — Phase 3.5 증거 분해</div>
+        <p class="cd">웹서치 산문을 <b>quote(verbatim)+url 단위</b>로 분해해 w7 부분필드 · nano_intent 후보 · KBF 힌트 · RTB · source_ref를 추출합니다. quote가 뒷받침하지 않는 필드는 <b>비워두는 것이 정답</b>(억지 채움 금지). 초안: <code>phase3-5_ Evidence Decomposition (증거 분해)/KR/v.1.0.0_…_0710.md</code></p>
+      </div>
+      <div class="card k-moved">
+        <div class="ct"><span class="dot moved"></span>Phase 4 — 생성에서 조립로</div>
+        <p class="cd">입력이 산문에서 <b>증거 유닛 JSON</b>으로 교체됩니다. 같은 <code>source_ref</code> 유닛 1–3개를 선택·결합해 장면을 쓰되, <b>모든 구체어(시간·장소·발화·행동)는 유닛 quote에 대응</b>해야 합니다. 섹션 간 결합 금지(맥락 합성 방지). 초안: <code>phase4_…/KR/v.1.1.0_…_0710.md</code></p>
+      </div>
+      <div class="card k-moved">
+        <div class="ct"><span class="dot moved"></span>Phase 5 — 힌트 대조로 확정</div>
+        <p class="cd">P4가 넘긴 <code>kbf_hints</code>를 basic research와 대조해 KBF를 <b>확정</b>하는 역할로 좁아집니다. 기존 숫자 날조 금지 규칙은 유지. <b>파일 개정은 후속 작업</b>으로 남깁니다.</p>
+      </div>
+      <div class="card k-bad">
+        <div class="ct"><span class="dot bad"></span>검증 — 사후 교정 → 회귀 감시</div>
+        <p class="cd">지금은 검증기가 걸러낸 카드를 사람이 repropose로 <b>사후 교정</b>합니다(1328: 10장 중 6장). To-Be에서는 접지가 생성 시점에 끝나므로, 검증은 <b>회귀 감시</b>로 이동 — fail/warning이 나오면 카드가 아니라 P3.5·P4 프롬프트를 고칩니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVIDENCE ============ -->
+  <section class="evi">
+    <h3>근거 — project 1328에서 확인된 4대 환각 유형</h3>
+    <p class="dsub">Hallucination_test 검증에서 fail/warning 사유는 전부 아래 네 패턴이었고, P3.5의 금지 규칙은 이 유형들과 1:1로 대응합니다.</p>
+    <div class="types">
+      <div class="tp"><div class="tt">① 시간 단정</div><div class="td">소스에 없는 기간·시점 특정. <b>"첫 주"</b>(CEP 4), <b>"주말"</b>(CEP 10) — 소스는 "처음 시작했을 때"까지만 말함</div></div>
+      <div class="tp"><div class="tt">② 없는 장소</div><div class="td">소스에 없는 장소 추가. <b>"일반 사무실/도서관"</b>(CEP 1) — 소스에 있는 건 "회의실/공용 자리·가족이 자는 집"</div></div>
+      <div class="tp"><div class="tt">③ 가짜 인용</div><div class="td">의역을 따옴표로 감싸 실재 발화처럼 표기. <b>"손목도 마우스로 더 안 맞는 것 같다"</b>(CEP 4) — verbatim은 "마우스까지 인체공학적으로 못 맞추는"</div></div>
+      <div class="tp"><div class="tt">④ 없는 행동</div><div class="td">소스에 없는 행동 서술. <b>"적응 단계에서 다시 검색"</b>(CEP 9) — 소스에는 "구매/반품 고민"만 있음</div></div>
+    </div>
+
+    <div class="ba">
+      <div class="bh">CEP 4 before/after — 사후 repropose가 한 일을 To-Be는 생성 시점에 합니다</div>
+      <span class="lab">As-Is Phase 4 출력 (warning)</span>
+      <p>재택근무를 시작한 <mark class="cut">첫 주</mark>, 노트북을 소파/침대에서 쓰다가 목·어깨가 먼저 뻐근해지고 결국 <mark class="cut">'손목도 마우스로 더 안 맞는 것 같다'</mark>고 느껴 교체를 떠올리는 순간</p>
+      <span class="lab">To-Be Phase 4 출력 (§1 유닛 2개 조립 = repropose 수정안과 동일)</span>
+      <p><mark class="keep">재택근무로 혼자 오래 작업하면서</mark> <mark class="keep">목·어깨 불편을 먼저 느끼고</mark>, <mark class="keep">소파·침대 옆에서 노트북을 쓰다</mark> <mark class="keep">손목이 몸쪽으로 꺾이는 게 반복돼</mark> <mark class="keep">'마우스까지 인체공학적으로 못 맞춘다'</mark>고 느껴 교체를 떠올리는 순간</p>
+    </div>
+  </section>
+
+  <!-- ============ QA ============ -->
+  <section class="explain">
+    <h3>왜 이렇게 설계했나 — 쉬운 해설</h3>
+    <p class="dsub">설계 판단의 근거를 Q&amp;A로 풀었습니다.</p>
+    <div class="cards">
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>왜 Phase 3 자체를 고치지 않고 별도 단계를 만드나요?</div>
+        <p class="a">Phase 3은 <b>web_search가 켜진 산문 생성</b>이라 구조화 JSON을 강제하면 리서치 품질(자연스러운 탐색)이 떨어집니다. 분해는 <b>tools 없는 값싼 후처리 호출</b>로 분리하는 편이 안전하고, Phase 3 프롬프트는 무수정으로 유지됩니다.</p>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>왜 Phase 4가 분해까지 흡수하면 안 되나요?</div>
+        <p class="a">"인용을 뽑는 판단"과 "장면을 만드는 생성"을 한 호출에 섞으면, 모델이 장면을 먼저 정하고 <b>인용을 거기에 끼워 맞추는</b> 환각이 재발합니다. 1328의 warning들이 정확히 이 패턴이었습니다. 분해(P3.5)가 먼저 재료를 고정하고, 조립(P4)은 재료 밖으로 못 나가게 하는 게 핵심입니다.</p>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>비용은 얼마나 늘어나나요?</div>
+        <p class="a">프로젝트당 호출 <b>+1</b>. P3.5는 P4와 같은 계열(gpt-5.4-nano · tools 없음 · reasoning none)이라 웹서치 단계 대비 저렴합니다. 대신 사후 repropose에 들던 <b>수작업 교정(1328 기준 카드의 60%)</b>이 사라집니다.</p>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>w7 필드를 억지로 다 채우면 안 되나요?</div>
+        <p class="a">안 됩니다. 빈 필드를 채우는 순간이 곧 환각입니다. <b>"quote가 뒷받침하는 필드만"</b>이 원칙이고, 얇은 카드는 다양성 quota가 다른 섹션에서 보충합니다. 희소하지만 접지된 카드가, 풍부하지만 지어낸 카드보다 낫습니다.</p>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>RTB와 source_ref는 뒤 단계에서 뭘 좋게 하나요?</div>
+        <p class="a">카드가 <b>재인용 가능한 근거</b>를 갖고 다니므로, P6(MA 진단)의 브랜드 인식 점검과 P8(콘텐츠 가이드)의 "신뢰 근거 배치"가 <b>추가 조사 없이</b> 가능해집니다. 브랜드 입장에서 AI 추천 후보군에 들어가려면 장면마다 RTB가 필요하다는 결론(1328 summary)과 직결됩니다.</p>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="qm">Q.</span>brand_nonBrand To-Be 맵과는 어떤 관계인가요?</div>
+        <p class="a"><b>독립적인 제안</b>입니다. 이 문서는 현행 파이프라인 대비 grounding 변경만 다루며, 게이트 제안(<code>cep_pipeline_asis_tobe_map.html</code>)과 충돌 없이 합성 가능합니다 — 게이트는 파이프라인 앞, P3.5는 중간이라 서로 다른 구간을 바꿉니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>CEP_Phase · Grounding 단계 도입 As-Is/To-Be (프롬프트 초안: phase3-5 v1.0.0 · phase4 v1.1.0)</span>
+    <span class="mono">source: Hallucination_test/repropose/1328.json · cep_bundle_21proj_210cards.json</span>
+  </footer>
+</div>
