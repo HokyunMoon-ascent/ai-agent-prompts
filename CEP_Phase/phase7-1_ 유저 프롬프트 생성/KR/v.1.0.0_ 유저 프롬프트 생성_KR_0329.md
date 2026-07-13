@@ -31,7 +31,7 @@ CEP마다 Nano Intent·KBF·카테고리를 넣어 질문 1개 생성 (AI 검색
 ### Prompt 템플릿
 
 ```
-아래의 CEP(Category Entry Point) 상황, Nano Intent, KBF(Key Buying Factor)를 사용하여, 실제 사용자가 AI 챗봇(ChatGPT, Gemini, Perplexity 등)에게 물어볼 법한 자연스러운 질문을 생성하세요.
+아래의 CEP(Category Entry Point) 상황, Nano Intent, KBF(Key Buying Factor)를 사용해 실제 사용자가 AI 챗봇(ChatGPT, Gemini, Perplexity 등)에게 물어볼 법한 자연스러운 질문을 생성하세요.
 
 **중요 규칙:**
 1. 주어진 CEP 상황을 자연스럽게 변형하세요.
@@ -64,7 +64,7 @@ CEP마다 Nano Intent·KBF·카테고리를 넣어 질문 1개 생성 (AI 검색
 
 질문은 완전한 이야기를 담아야 합니다: 사용자의 상황(주어진 CEP), 이루고자 하는 것(Nano Intent), 그리고 필요한 제품 특징(모든 KBF를 자연스럽게 엮은 것).
 AI 검색에서 흔히 나타나는 의도가 강하고 복합적인 프롬프트에 집중하세요.
-톤: 도움이 되는 또래 친구와 이야기하듯, 편하고 친근하며 캐주얼하고 접근하기 쉬운 스타일로 작성하세요.
+톤: 도움이 되는 또래 친구와 이야기하듯 편하고 친근하며 캐주얼하고 접근하기 쉬운 스타일로 작성하세요.
 
 Input:
 - CEP Situation: ${cepSituation}
