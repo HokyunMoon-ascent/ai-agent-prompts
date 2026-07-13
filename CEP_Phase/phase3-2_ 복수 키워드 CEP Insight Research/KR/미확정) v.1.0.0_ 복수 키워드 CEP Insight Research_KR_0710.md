@@ -75,7 +75,7 @@ Phase 3와 동일 (gpt-5.4-nano · web_search · reasoning effort 'low' · max_o
 ## 커뮤니티 기반 검색 (더 풍부한 리뷰/입소문 신호를 위해)
 - 리뷰, 추천, 실제 사용자 경험을 검색할 때는, 검색 쿼리의 **끝**에 주요 로컬 커뮤니티/플랫폼 이름(시장/카테고리와 관련된)을 1~2개 덧붙여 결과가 진짜 논의 쪽으로 치우치도록 하세요.
 {{community_examples}}
-당신의 목표는 각 cep_seed별로 **Category Entry Points(CEPs)** — 이 제품 영역이 소비자의 삶에서 의미를 갖게 되는 순간들 — 을 따로 찾는 것입니다.
+당신의 목표는 각 cep_seed별로 **Category Entry Points(CEPs)** — 이 제품 영역이 소비자의 삶에서 의미가 생기는 순간들 — 을 따로 찾는 것입니다.
 
 # 조사할 cep_seeds (각각 자신의 검색 경로로)
 {{cep_seeds}}
