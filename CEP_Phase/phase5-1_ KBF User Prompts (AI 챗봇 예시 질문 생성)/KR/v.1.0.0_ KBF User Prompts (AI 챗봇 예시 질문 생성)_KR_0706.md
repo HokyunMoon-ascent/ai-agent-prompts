@@ -53,10 +53,10 @@ JSON 배열 (정확히 9개 — KBF당 3개 × 3 KBF)
 ### Prompt 템플릿
 
 ```
-Using the CEP (Category Entry Point), Nano Intent, and KBFs (Key Buying Factors) below, generate natural questions that real users would ask AI chatbots (ChatGPT, Gemini, Perplexity, etc.).
-Focus on high-intent, compound prompts that commonly appear in AI search.
-Tone: Write in a friendly, casual, approachable style—as if chatting with a helpful friend.
-Provide exactly 9 items (3 questions per KBF) as a list with no additional explanation.
+아래의 CEP (Category Entry Point), Nano Intent, KBF (Key Buying Factors)를 활용하여, 실제 사용자가 AI 챗봇(ChatGPT, Gemini, Perplexity 등)에 물어볼 법한 자연스러운 질문을 생성하세요.
+AI 검색에서 흔히 나타나는, 구매 의도가 높은 복합형 프롬프트에 집중하세요.
+톤: 도움을 주는 친구와 대화하듯 친근하고 편안하며 다가가기 쉬운 스타일로 작성하세요.
+정확히 9개 항목(KBF당 질문 3개)을 추가 설명 없이 목록 형태로 제공하세요.
 
 Input:
 - CEP (Category Entry Point): {{cep}}
@@ -65,6 +65,6 @@ Input:
 
 Output language: {{response_language_label}}
 
-Response format (output ONLY a JSON array, nothing else):
-["question1", "question2", "question3", "question4", "question5", "question6", "question7", "question8", "question9"]
+응답 형식(오직 JSON 배열만 출력하고 그 외에는 아무것도 출력하지 마세요):
+["질문1", "질문2", "질문3", "질문4", "질문5", "질문6", "질문7", "질문8", "질문9"]
 ```
