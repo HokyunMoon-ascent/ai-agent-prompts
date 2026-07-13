@@ -77,42 +77,42 @@ Phase 2와 동일.
 ### Prompt 템플릿
 
 ```
-You are generating machine-readable product anchors for vector retrieval from MULTIPLE input keywords.
+당신은 여러 개의 입력 키워드로부터 벡터 검색용 기계 판독 가능한 제품 앵커를 생성하고 있습니다.
 
-Constraints:
-- All strings MUST be written in {{response_language}}.
+제약 조건:
+- 모든 문자열은 반드시 {{response_language}}로 작성해야 합니다.
 
-Context:
-- productKeywords (comma-separated): {{product_name}}
+컨텍스트:
+- productKeywords (콤마 구분): {{product_name}}
 - country: {{country}}
 
-Visible research (Basic Research for multiple keywords, preprocessed section summary):
+노출 리서치 (복수 키워드에 대한 기본 조사, 전처리된 섹션 요약):
 {{basic_research_summary}}
 
-# Step 1 — Classify each input keyword
-This layering applies to ANY product domain (cosmetics, electronics, food/supplements, appliances, services) — NOT just beauty.
-Classify every comma-separated keyword into ONE layer:
-- **category**: a product category — the thing being sold (cosmetics: 주름개선 화장품 · electronics: 게이밍 노트북 · food: 오메가3)
-- **effect**: a functional effect/benefit/attribute consumers want, in ANY domain (cosmetics: 주름개선 · electronics: 발열 적은 · food: 혈행개선)
-- **super_concept**: a broad umbrella theme (cosmetics: 안티에이징 · electronics: 고성능 · food: 건강기능식품)
+# Step 1 — 각 입력 키워드 분류
+이 층위 구분은 뷰티뿐 아니라 모든 제품 도메인(화장품, 전자제품, 식품/보충제, 가전, 서비스)에 적용됩니다.
+콤마로 구분된 모든 키워드를 하나의 층위로 분류하세요:
+- **category**: 제품 카테고리 — 판매되는 대상 (화장품: 주름개선 화장품 · 전자제품: 게이밍 노트북 · 식품: 오메가3)
+- **effect**: 소비자가 원하는 기능적 효능/편익/속성, 모든 도메인에서 (화장품: 주름개선 · 전자제품: 발열 적은 · 식품: 혈행개선)
+- **super_concept**: 폭넓은 상위 테마 (화장품: 안티에이징 · 전자제품: 고성능 · 식품: 건강기능식품)
 
-# Step 2 — Build category anchors
-- Derive "category" from the CATEGORY-layer keywords only (plus, if needed, the smallest common category the effects/super-concepts belong to).
-- 2-4 generic/common nouns or short noun phrases (no brand/model names).
-- Deduplicate and sort broad → specific.
-- The categories must represent the overall product, NOT a single feature or a specific perspective.
+# Step 2 — 카테고리 앵커 구축
+- "category"는 CATEGORY 층위 키워드에서만 도출하세요 (필요하면, effect/super_concept가 속하는 최소 공통 카테고리를 추가).
+- 2-4개의 일반적/보편적 명사 또는 짧은 명사구 (브랜드/모델명 제외).
+- 중복 제거 후 넓은 개념 → 구체적 개념 순으로 정렬.
+- 카테고리는 단일 기능이나 특정 관점이 아니라 제품 전체를 대표해야 합니다.
 
-# Step 3 — Preserve CEP seeds (do NOT discard)
-- Put every "effect" and "super_concept" keyword into "cep_seeds" verbatim, each with its type.
-- effect/super_concept keywords are the strongest CEP/Nano-Intent clues — NEVER drop them and NEVER put them into "category".
-- Do NOT add keywords that were not in the input.
-- If there are NO effect/super_concept keywords (input is only categories/brands, e.g., "생수, 삼다수, 에비앙"), set "cep_seeds" to an empty array []. Do NOT fabricate seeds.
+# Step 3 — CEP 시드 보존 (버리지 말 것)
+- 모든 "effect" 및 "super_concept" 키워드를 원문 그대로 각자의 type과 함께 "cep_seeds"에 넣으세요.
+- effect/super_concept 키워드는 가장 강력한 CEP/나노인텐트 단서입니다 — 절대 버리지 말고, 절대 "category"에 넣지 마세요.
+- 입력에 없던 키워드를 추가하지 마세요.
+- effect/super_concept 키워드가 하나도 없으면(입력이 카테고리/브랜드뿐인 경우, 예: "생수, 삼다수, 에비앙"), "cep_seeds"를 빈 배열 []로 설정하세요. 시드를 지어내지 마세요.
 
-Schema (exact):
+스키마 (정확히):
 {
   "category": ["..."],
   "cep_seeds": [ { "keyword": "...", "type": "effect" | "super_concept" } ]
 }
 
-Now output ONLY the JSON.
+이제 JSON만 출력하세요.
 ```

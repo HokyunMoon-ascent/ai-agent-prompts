@@ -40,27 +40,27 @@ JSON 객체
 ### Prompt 템플릿
 
 ```
-You are generating machine-readable product anchors for vector retrieval.
+당신은 벡터 검색을 위한 기계 판독용 product anchors를 생성하고 있습니다.
 
-Constraints:
-- All strings MUST be written in {{response_language}}.
+제약 조건:
+- 모든 문자열은 반드시 {{response_language}}로 작성해야 합니다.
 
-Context:
+컨텍스트:
 - productName: {{product_name}}
 - country: {{country}}
 
-Visible research (Basic Research, preprocessed section summary):
+참고 조사 자료 (Basic Research, 전처리된 섹션 요약):
 {{basic_research_summary}}
 
-Schema (exact):
+스키마 (정확히 준수):
 {
   "category": ["..."]
 }
 
-Rules:
-- category: 2-4 generic/common nouns or short noun phrases (no brand/model names).
-- Deduplicate and sort from broad → specific when possible.
-- The categories must represent the overall product, not a single feature or a specific perspective.
+규칙:
+- category: 2~4개의 일반적/보편적 명사 또는 짧은 명사구 (브랜드명/모델명 제외).
+- 중복을 제거하고, 가능하면 광범위 → 구체 순으로 정렬합니다.
+- 카테고리는 단일 기능이나 특정 관점이 아니라 제품 전반을 대표해야 합니다.
 
-Now output ONLY the JSON.
+이제 JSON만 출력하세요.
 ```

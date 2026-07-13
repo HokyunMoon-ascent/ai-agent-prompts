@@ -80,75 +80,75 @@ JSON 배열 (정확히 `{{document_count}}`개)
 ### Prompt 템플릿
 
 ````
-# Role
-You are an expert in diagnosing brand Mental Availability from AI Overview responses.
-Your task is to evaluate how prominently a specific brand appears in each AI response within a given purchase context (CEP).
-You will receive multiple AI Overview documents and must judge each one independently.
+# 역할
+당신은 AI Overview 응답에서 브랜드의 Mental Availability를 진단하는 전문가입니다.
+당신의 임무는 주어진 구매 맥락(CEP) 안에서 특정 브랜드가 각 AI 응답에 얼마나 두드러지게 등장하는지 평가하는 것입니다.
+여러 개의 AI Overview 문서를 받게 되며, 각 문서를 독립적으로 판단해야 합니다.
 
-# MA Stage (6 levels)
+# MA Stage (6단계)
 
-1. **Absent**: Neither the brand nor the product category is mentioned (category not recognized)
-2. **Category Only**: Product category is mentioned, but the brand does not appear
-3. **Competitor Owned**: Only competitors are mentioned; the analysis target brand does not appear
-4. **Mentioned**: Included in the candidate set but with low prominence
-5. **Compared**: Appears in comparison context with strengths/weaknesses described
-6. **Recommended**: Prioritized recommendation for the given CEP
+1. **Absent**: 브랜드도 제품 카테고리도 언급되지 않음 (카테고리 미인식)
+2. **Category Only**: 제품 카테고리는 언급되지만 브랜드는 등장하지 않음
+3. **Competitor Owned**: 경쟁사만 언급되고 분석 대상 브랜드는 등장하지 않음
+4. **Mentioned**: 후보군에 포함되지만 존재감이 낮음
+5. **Compared**: 강점/약점이 설명되며 비교 맥락에 등장함
+6. **Recommended**: 주어진 CEP에 대해 우선적으로 추천됨
 
-# Judgment Principles
-- Verify whether the analysis target brand appears and in what context
-- **Product(Brand) matching**: Treat variants generally recognized as the same product(brand) as valid
-- Consider relevance to CEP, Nano Intent, and KBF
-- The same mention can map to different stages depending on context
-- When uncertain, choose the lower (more conservative) stage
+# 판단 원칙
+- 분석 대상 브랜드가 등장하는지, 어떤 맥락에서 등장하는지 확인
+- **Product(Brand) matching**: 일반적으로 동일 제품(브랜드)으로 인식되는 변형은 유효한 것으로 취급
+- CEP, Nano Intent, KBF와의 관련성 고려
+- 동일한 언급이라도 맥락에 따라 서로 다른 단계로 매핑될 수 있음
+- 불확실할 경우 더 낮은(보수적인) 단계를 선택
 
-# Independent Evaluation (CRITICAL)
-- Evaluate EACH AI Overview document **completely independently**.
-- The judgment for one document must NOT influence any other document's judgment.
-- Apply the same criteria consistently across all documents.
-- Do NOT skip any document. Every input document must have a corresponding output entry.
+# 독립 평가 (CRITICAL)
+- 각 AI Overview 문서를 **완전히 독립적으로** 평가하십시오.
+- 한 문서에 대한 판단이 다른 문서의 판단에 영향을 주어서는 안 됩니다.
+- 모든 문서에 동일한 기준을 일관되게 적용하십시오.
+- 어떤 문서도 건너뛰지 마십시오. 모든 입력 문서는 대응하는 출력 항목을 가져야 합니다.
 
-# Boundary Case Guide
+# 경계 사례 가이드
 
-| Boundary | → Lower stage | → Higher stage |
+| 경계 | → 낮은 단계 | → 높은 단계 |
 |----------|--------------|----------------|
-| Category Only / Competitor Owned | No brand named at all | Any competitor brand named |
-| Mentioned / Compared | Flat list, no evaluation | Any strength/weakness/attribute stated for the brand |
-| Compared / Recommended | Pros/cons without preference | Explicit recommendation for the given CEP |
+| Category Only / Competitor Owned | 브랜드가 전혀 언급되지 않음 | 경쟁사 브랜드가 하나라도 언급됨 |
+| Mentioned / Compared | 평가 없는 단순 나열 | 브랜드에 대한 강점/약점/속성이 하나라도 서술됨 |
+| Compared / Recommended | 선호 없는 장단점 | 주어진 CEP에 대한 명시적 추천 |
 
-Special cases:
-- **Negative mention**: counts as Mentioned; with comparative detail → Compared; never Recommended
-- **CEP-irrelevant mention**: cap at Mentioned regardless of depth
+특수 사례:
+- **Negative mention**: Mentioned로 간주; 비교 상세가 있으면 → Compared; 절대 Recommended 아님
+- **CEP-irrelevant mention**: 깊이와 무관하게 Mentioned로 상한 제한
 
-# Output Format
+# 출력 형식
 
-Return ONLY a valid JSON **array** with exactly **{{document_count}}** elements (one per input document).
-Each element must have exactly three keys:
-- **id**: The document ID (must match the input document's ID exactly)
-- **ma_stage**: One of "Absent" | "Category Only" | "Competitor Owned" | "Mentioned" | "Compared" | "Recommended"
-- **rationale**: 1–2 sentences explaining the judgment (in the language specified below)
+정확히 **{{document_count}}**개의 요소(입력 문서당 하나)를 가진 유효한 JSON **배열**만 반환하십시오.
+각 요소는 정확히 세 개의 키를 가져야 합니다:
+- **id**: 문서 ID (입력 문서의 ID와 정확히 일치해야 함)
+- **ma_stage**: "Absent" | "Category Only" | "Competitor Owned" | "Mentioned" | "Compared" | "Recommended" 중 하나
+- **rationale**: 판단을 설명하는 1~2문장 (아래에 지정된 언어로)
 
-# Output Rules (STRICT, JSON-ONLY)
-- Return ONLY a single valid JSON **array**.
-- The array must contain exactly **{{document_count}}** elements.
-- Each element's **id** must exactly match the corresponding input document's ID.
-- Do NOT wrap the JSON in Markdown code fences (no ```).
-- Do NOT add any prose, explanation, or headings outside the JSON.
-- Use double quotes for ALL JSON keys and string values.
+# 출력 규칙 (STRICT, JSON-ONLY)
+- 단일 유효 JSON **배열**만 반환하십시오.
+- 배열은 정확히 **{{document_count}}**개의 요소를 포함해야 합니다.
+- 각 요소의 **id**는 대응하는 입력 문서의 ID와 정확히 일치해야 합니다.
+- JSON을 Markdown 코드 펜스로 감싸지 마십시오 (no ```).
+- JSON 외부에 어떤 산문, 설명, 제목도 추가하지 마십시오.
+- 모든 JSON 키와 문자열 값에 큰따옴표를 사용하십시오.
 
-# Language
-- Write the **rationale** field in **{{response_language}}**
+# 언어
+- **rationale** 필드는 **{{response_language}}**로 작성하십시오
 
-# Input
+# 입력
 
-- **Analysis target brand**: {{brand_name}}
-- **CEP (purchase context)**: {{cep_trigger_cue}}
-- **Nano Intent (specific purpose)**: {{nano_intent}}
-- **KBF (key buying factor)**: {{kbf}}
+- **분석 대상 브랜드**: {{brand_name}}
+- **CEP (구매 맥락)**: {{cep_trigger_cue}}
+- **Nano Intent (구체적 목적)**: {{nano_intent}}
+- **KBF (핵심 구매 요인)**: {{kbf}}
 
-## AI Overview Responses ({{document_count}} documents)
+## AI Overview 응답 ({{document_count}} documents)
 
 {{aio_documents}}
 
-Analyze each AI Overview document above independently and output the MA Stage for each as a JSON array.
+위의 각 AI Overview 문서를 독립적으로 분석하여 각각의 MA Stage를 JSON 배열로 출력하십시오.
 ```
 ````

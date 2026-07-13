@@ -31,40 +31,40 @@ CEP마다 Nano Intent·KBF·카테고리를 넣어 질문 1개 생성 (AI 검색
 ### Prompt 템플릿
 
 ```
-Using the CEP (Category Entry Point) situation, Nano Intents, and KBFs (Key Buying Factors) below, generate a natural question that real users would ask AI chatbots (ChatGPT, Gemini, Perplexity, etc.).
+아래의 CEP(Category Entry Point) 상황, Nano Intent, KBF(Key Buying Factor)를 사용하여, 실제 사용자가 AI 챗봇(ChatGPT, Gemini, Perplexity 등)에게 물어볼 법한 자연스러운 질문을 생성하세요.
 
-**IMPORTANT RULES:**
-1. Transform the given CEP situation naturally.
-2. Generate exactly ONE comprehensive question that naturally incorporates ALL the KBFs provided below.
-3. The question should include the CEP situation context and weave together all Key Buying Factors in a natural, conversational way.
-4. The product category should be naturally integrated.
-5. Do NOT use technical product specifications or exact KBF terminology. Instead, describe the features in everyday language that a regular user would naturally use.
-6. Write from the perspective of a regular consumer who doesn't know exact product features but knows what they need in their situation.
-7. Use natural, conversational language—as if chatting with a helpful friend.
-8. Multiple buying factors should flow naturally in one cohesive question, not as a disconnected list.
+**중요 규칙:**
+1. 주어진 CEP 상황을 자연스럽게 변형하세요.
+2. 아래에 제공된 모든 KBF를 자연스럽게 녹여낸 종합적인 질문을 정확히 1개만 생성하세요.
+3. 질문에는 CEP 상황의 맥락이 담겨야 하며, 모든 Key Buying Factor를 자연스럽고 대화하듯 엮어내야 합니다.
+4. 제품 카테고리를 자연스럽게 녹여내세요.
+5. 기술적인 제품 사양이나 정확한 KBF 용어를 사용하지 마세요. 대신 일반 사용자가 자연스럽게 쓸 법한 일상적인 표현으로 특징을 설명하세요.
+6. 정확한 제품 특징은 모르지만 자신의 상황에서 무엇이 필요한지는 아는 일반 소비자의 관점에서 작성하세요.
+7. 도움이 되는 친구와 이야기하듯 자연스럽고 대화체로 작성하세요.
+8. 여러 구매 요인이 끊긴 목록이 아니라 하나의 응집된 질문 안에서 자연스럽게 흐르도록 하세요.
 
-**Example:**
-- CEP Situation: When I need to take care of my breakfast before going to work
-- Nano Intents: "Maintain crispiness", "Make it quickly", "Making cooking routine"
-- KBF 1: "Tempered glass door"
-- KBF 2: "Quick heating technology"
-- KBF 3: "Easy-clean coating"
+**예시:**
+- CEP 상황: 출근 전에 아침 식사를 해결해야 할 때
+- Nano Intent: "바삭함 유지", "빠르게 만들기", "요리를 루틴으로 만들기"
+- KBF 1: "강화유리 도어"
+- KBF 2: "빠른 가열 기술"
+- KBF 3: "간편 세척 코팅"
 
-- Bad: "When I need to take care of my dinner after work, I'm looking for an air fryer with a tempered glass door, quick heating, and easy cleaning."
-  -  ❌ Completely Changed CEP situation.
-  -  ❌ Used technical product specifications or exact KBF terminology.
-  -  ❌ Listed features without natural flow.
+- 나쁜 예: "퇴근 후 저녁 식사를 해결해야 할 때, 강화유리 도어와 빠른 가열, 간편 세척이 되는 에어프라이어를 찾고 있어요."
+  -  ❌ CEP 상황을 완전히 바꿔버림.
+  -  ❌ 기술적인 제품 사양이나 정확한 KBF 용어를 사용함.
+  -  ❌ 자연스러운 흐름 없이 특징을 나열함.
 
-- Good: "I need to take care of my breakfast before going to work during a busy preparation time. I want an air fryer that heats up fast so I can cook quickly, lets me see inside clearly to check doneness in real time, and is easy to wipe clean afterwards. What products are available?"
-  - ✅ Includes CEP situation ("take care of my breakfast before going to work")
-  - ✅ Includes Nano Intents ("during a busy preparation time", "cook quickly")
-  - ✅ Includes ALL KBF focuses naturally ("heats up fast", "see inside clearly", "easy to wipe clean") without technical terms
-  - ✅ Includes product category ("air fryer")
-  - ✅ Multiple needs flow naturally in one cohesive question
+- 좋은 예: "바쁜 준비 시간에 출근 전 아침을 해결해야 해요. 빨리 데워져서 후딱 요리할 수 있고, 안이 잘 보여서 익은 정도를 실시간으로 확인할 수 있고, 다 쓴 뒤엔 쓱 닦기 쉬운 에어프라이어를 원해요. 어떤 제품이 있을까요?"
+  - ✅ CEP 상황 포함 ("출근 전 아침을 해결")
+  - ✅ Nano Intent 포함 ("바쁜 준비 시간에", "후딱 요리")
+  - ✅ 모든 KBF 초점을 기술 용어 없이 자연스럽게 포함 ("빨리 데워져서", "안이 잘 보여서", "쓱 닦기 쉬운")
+  - ✅ 제품 카테고리 포함 ("에어프라이어")
+  - ✅ 여러 니즈가 하나의 응집된 질문 안에서 자연스럽게 흐름
 
-The question must tell a complete story: the user's situation (given CEP), what they want to achieve (Nano Intents), and what product features they need (all KBFs naturally woven together).
-Focus on high-intent, compound prompts that commonly appear in AI search.
-Tone: Write in an informal, friendly, casual, approachable style—as if chatting with a helpful same age person.
+질문은 완전한 이야기를 담아야 합니다: 사용자의 상황(주어진 CEP), 이루고자 하는 것(Nano Intent), 그리고 필요한 제품 특징(모든 KBF를 자연스럽게 엮은 것).
+AI 검색에서 흔히 나타나는 의도가 강하고 복합적인 프롬프트에 집중하세요.
+톤: 도움이 되는 또래 친구와 이야기하듯, 편하고 친근하며 캐주얼하고 접근하기 쉬운 스타일로 작성하세요.
 
 Input:
 - CEP Situation: ${cepSituation}

@@ -84,52 +84,52 @@ JSON 배열 (증거 유닛 목록 — 개수 제한 없음, 본문이 뒷받침�
 ### Prompt 템플릿
 
 ````
-# Role
-You are an evidence curation specialist. Your job is to decompose consumer research text into **verbatim evidence units** — structured records where every field is directly supported by an exact quote from the source text. You NEVER add information that is not in the source.
+# 역할
+당신은 증거 큐레이션 전문가입니다. 당신의 임무는 소비자 리서치 텍스트를 **verbatim 증거 유닛(evidence unit)**으로 분해하는 것입니다 — 모든 필드가 소스 텍스트의 정확한 quote로 직접 뒷받침되는 구조화된 레코드입니다. 소스에 없는 정보는 절대 추가하지 않습니다.
 
-# Source Text (Product Research)
-The following is web-researched consumer context for **"{{product_name}}"**. Section headings are numbered (## N. ...); use N as the section reference.
+# 소스 텍스트 (Product Research)
+다음은 **"{{product_name}}"**에 대한 웹 리서치 기반 소비자 컨텍스트입니다. 섹션 제목에는 번호가 매겨져 있으며(## N. ...), N을 섹션 참조로 사용하세요.
 
 {{product_research_sections}}
 
 {{latent_intent_block}}
 
-# Web Sources (for URL matching)
+# 웹 소스 (URL 매칭용)
 {{web_sources_block}}
 
-# Task
-Decompose the source text into evidence units. Work section by section, paragraph by paragraph:
+# 작업
+소스 텍스트를 증거 유닛으로 분해하세요. 섹션별로, 문단별로 작업합니다:
 
-1. For each paragraph that describes a distinct consumer context, extract ONE evidence unit.
-2. `quote` = the sentence(s) copied **verbatim** from that paragraph. Copy exactly — do NOT paraphrase, summarize, merge sentences from different paragraphs, or "clean up" wording.
-3. `source_ref` = "§N" where N is the section number the quote belongs to.
-4. `url` / `url_title` = the citation link attached to that paragraph in the source text (or the best match from Web Sources). Use "" if unknown. Never invent a URL.
-5. `w7` = only the dimensions the quote itself supports, phrased using the quote's own words as much as possible:
-   - why (motivation) / when (time) / where (place) / while_ (parallel activity) / with_whom / with_what / how_feeling
-   - **Omit any key the quote does not support. Sparse units are correct; padded units are wrong.**
-6. `nano_intent_candidates` = 0–3 consumer purposes that can be stated using ONLY what the quote says. Do not repeat the product/category name. No generic phrases ("need it", "ran out").
-7. `kbf_hints` = 0–3 concrete product attributes mentioned or directly implied by the quote (form, structure, material, feature). Include a numeric value ONLY if it appears in the quote verbatim.
-8. `rtb` = the quote trimmed into a re-citable form, wrapped in quotation marks, with a short source tag. Trimming only — never add or alter words.
+1. 서로 구별되는 소비자 컨텍스트를 서술하는 각 문단마다, 증거 유닛을 하나만 추출합니다.
+2. `quote` = 해당 문단에서 **verbatim**으로 복사한 문장. 정확히 복사하세요 — 의역, 요약, 서로 다른 문단의 문장 병합, 표현 "정리(clean up)"는 절대 하지 마세요.
+3. `source_ref` = "§N", 여기서 N은 quote가 속한 섹션 번호입니다.
+4. `url` / `url_title` = 소스 텍스트에서 해당 문단에 붙은 인용 링크(또는 웹 소스에서 가장 잘 맞는 것). 불명이면 ""를 사용하세요. URL을 절대 지어내지 마세요.
+5. `w7` = quote 자체가 뒷받침하는 차원만, 가능한 한 quote 자신의 표현을 사용해 서술:
+   - why (동기) / when (시간) / where (장소) / while_ (병행 활동) / with_whom / with_what / how_feeling
+   - **quote가 뒷받침하지 않는 키는 생략하세요. 희소한(sparse) 유닛이 옳고, 억지로 채운 유닛은 틀립니다.**
+6. `nano_intent_candidates` = quote가 말하는 내용만으로 진술할 수 있는 소비자 목적 0~3개. 제품/카테고리 이름을 반복하지 마세요. 일반적인 표현("필요하다", "다 떨어졌다")은 금지.
+7. `kbf_hints` = quote에 언급되었거나 직접 함의된 구체적 제품 속성 0~3개(형태, 구조, 소재, 기능). 수치는 quote에 verbatim으로 나타날 때만 포함하세요.
+8. `rtb` = quote를 재인용 가능한 형태로 다듬어 따옴표로 감싸고 짧은 소스 태그를 붙인 것. 트리밍만 허용 — 단어를 절대 추가하거나 바꾸지 마세요.
 
-# Hard Grounding Rules (violations invalidate the unit)
-- The quote must exist verbatim in the source text.
-- Every w7 value, nano intent candidate, and KBF hint must be traceable to the quote it belongs to — not to your general knowledge of the category.
-- The following four hallucination patterns are strictly FORBIDDEN anywhere in the output:
-  1. **Time assertion**: adding a period/timing the source does not state (e.g., "첫 주", "주말").
-  2. **Invented place**: adding a location the source does not mention (e.g., "도서관").
-  3. **Fake quotation**: wrapping a paraphrase in quotation marks as if it were spoken/written in the source.
-  4. **Invented action**: describing an action the source does not describe (e.g., "다시 검색").
-- If a paragraph is too vague to support any w7 field, output the unit with quote + source_ref only (empty w7 object is allowed).
+# 하드 그라운딩 규칙 (위반 시 해당 유닛 무효)
+- quote는 소스 텍스트에 verbatim으로 존재해야 합니다.
+- 모든 w7 값, 나노인텐트 후보, KBF 힌트는 그것이 속한 quote로 추적 가능해야 합니다 — 카테고리에 대한 당신의 일반 지식이 아니라.
+- 다음 네 가지 환각 패턴은 출력 어디에서도 엄격히 금지됩니다:
+  1. **시간 단정 (Time assertion)**: 소스가 진술하지 않은 기간/시점을 추가(예: "첫 주", "주말").
+  2. **없는 장소 (Invented place)**: 소스가 언급하지 않은 장소를 추가(예: "도서관").
+  3. **가짜 인용 (Fake quotation)**: 의역을 소스에서 발화/기술된 것처럼 따옴표로 감싸기.
+  4. **없는 행동 (Invented action)**: 소스가 서술하지 않은 행동을 서술(예: "다시 검색").
+- 문단이 너무 모호해 어떤 w7 필드도 뒷받침하지 못하면, quote + source_ref만으로 유닛을 출력하세요(빈 w7 객체 허용).
 
-# Language
-Write all field values in **{{response_language}}**, except `quote`/`rtb` which must preserve the source language verbatim.
+# 언어
+`quote`/`rtb`을 제외한 모든 필드 값을 **{{response_language}}**로 작성하세요. `quote`/`rtb`은 소스 언어를 verbatim으로 보존해야 합니다.
 
-# OUTPUT RULES (STRICT, JSON-ONLY)
-- Return ONLY a single valid JSON array.
-- Do NOT wrap the JSON in Markdown code fences (no ```).
-- Do NOT add any prose, explanation, or headings outside JSON.
-- Do NOT add trailing commas. Use double quotes for ALL keys and string values.
-- `unit_id` must be a number, 1-based, sequential.
+# 출력 규칙 (엄격, JSON 전용)
+- 유효한 단일 JSON 배열만 반환하세요.
+- JSON을 마크다운 코드 펜스로 감싸지 마세요(``` 금지).
+- JSON 밖에 어떤 산문, 설명, 제목도 추가하지 마세요.
+- 후행 쉼표를 추가하지 마세요. 모든 키와 문자열 값에 큰따옴표를 사용하세요.
+- `unit_id`는 숫자여야 하며, 1부터 시작하는 순차 번호입니다.
 ````
 
 #### 템플릿 조립 규칙

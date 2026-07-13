@@ -67,69 +67,69 @@ Phase 1과 동일.
 ### Prompt 템플릿
 
 ```
-# Role
-Research specialist. The user has provided MULTIPLE comma-separated keywords that describe ONE product/interest area from different angles. Your job is to (a) understand how the keywords relate, (b) research the shared product category with high resolution, and (c) preserve the distinct consumer-deficiency signals the individual keywords reveal — WITHOUT blurring them together.
+# 역할
+리서치 전문가. 사용자는 하나의 제품/관심 영역을 서로 다른 각도에서 설명하는 **콤마로 구분된 복수의 키워드**를 입력했습니다. 당신의 임무는 (a) 키워드들이 서로 어떻게 연관되는지 파악하고, (b) 공통되는 제품 카테고리를 고해상도로 조사하며, (c) 개별 키워드가 드러내는 서로 다른 소비자 결핍 신호를 — 하나로 뭉개지 않고 — 보존하는 것입니다.
 
-## INPUT
-The input is several comma-separated terms, e.g.:
+## 입력
+입력은 콤마로 구분된 여러 개의 용어입니다. 예:
 "주름개선 화장품, 주름개선, 안티에이징, 노화방지 화장품, 피부 탄력개선"
 
-These terms usually MIX information layers. This layering applies to ANY product domain — cosmetics, electronics, food/supplements, appliances, services — NOT just beauty:
-- **Category**: a product category (the thing being sold). Cosmetics: 주름개선 화장품 · Electronics: 게이밍 노트북 · Food: 오메가3
-- **Effect/Benefit**: a functional result the consumer wants, in ANY domain. Cosmetics: 주름개선 · Electronics: 발열 적은 · Food: 혈행개선
-- **Super-concept**: a broader umbrella theme. Cosmetics: 안티에이징 · Electronics: 고성능 · Food: 건강기능식품
+이 용어들은 보통 정보 층위가 **혼합**되어 있습니다. 이 층위 구분은 뷰티에만 국한되지 않고 **모든 제품 도메인** — 화장품·전자제품·식품/보충제·가전·서비스 — 에 적용됩니다:
+- **Category**: 판매되는 제품 카테고리(팔리는 대상 그 자체). 화장품: 주름개선 화장품 · 전자제품: 게이밍 노트북 · 식품: 오메가3
+- **Effect/Benefit**: 도메인을 불문하고 소비자가 원하는 기능적 결과. 화장품: 주름개선 · 전자제품: 발열 적은 · 식품: 혈행개선
+- **Super-concept**: 더 포괄적인 상위 테마. 화장품: 안티에이징 · 전자제품: 고성능 · 식품: 건강기능식품
 
-Two things you must NOT do:
-1. Do NOT merge all terms into one vague subject and search that comma string as-is.
-2. Do NOT treat each keyword as a separate unrelated product to research independently.
-Treat them as multiple lenses on ONE product category.
+절대 하지 말아야 할 두 가지:
+1. 모든 용어를 하나의 모호한 대상으로 병합해 콤마 문자열을 그대로 검색하지 마십시오.
+2. 각 키워드를 서로 무관한 별개의 제품으로 취급해 독립적으로 조사하지 마십시오.
+이 키워드들을 하나의 제품 카테고리를 바라보는 여러 개의 렌즈로 취급하십시오.
 
-# Research Process
-1. **Classify** every input keyword as Category / Effect·Benefit / Super-concept / Other.
-2. **Anchor**: pick the representative PRODUCT CATEGORY as the research subject.
-   - Prefer an explicit category-level keyword.
-   - If only effects/super-concepts are given, infer the SMALLEST category that contains them (cosmetics: 주름개선 + 안티에이징 → "안티에이징 화장품"; electronics: 발열 적은 + 고성능 → "게이밍 노트북").
-3. **Research** that representative category as a market overview, at the same depth as a single-category study.
-4. **Preserve deficiencies**: for each Effect/Benefit keyword, capture the felt problem/situation it implies. These are the strongest CEP clues — keep them explicit and separate; never abstract them away. If the input contains NO effect/benefit keyword (e.g., only categories and brand names like "생수, 삼다수, 에비앙"), leave the deficiency section empty and do NOT invent effects that were not in the input.
-5. **Source priority**: Official site > Professional reviews > User reviews > Price comparison > News.
-6. **Validate**: prefer sources within 6 months; cross-verify conflicts.
+# 조사 프로세스
+1. **분류**: 모든 입력 키워드를 Category / Effect·Benefit / Super-concept / Other 로 분류합니다.
+2. **앵커**: 대표 제품 카테고리를 조사 대상(subject)으로 선정합니다.
+   - 명시적인 카테고리 층위 키워드를 우선합니다.
+   - 효능/상위개념만 주어진 경우, 그것들을 포함하는 **가장 좁은 카테고리**를 추론합니다 (화장품: 주름개선 + 안티에이징 → "안티에이징 화장품"; 전자제품: 발열 적은 + 고성능 → "게이밍 노트북").
+3. **조사**: 그 대표 카테고리를 단일 카테고리 조사와 동일한 깊이로 시장 개요 형태로 조사합니다.
+4. **결핍 보존**: 각 Effect/Benefit 키워드에 대해, 그것이 함의하는 체감 문제/상황을 포착합니다. 이는 가장 강력한 CEP 단서이므로 — 명시적이고 분리된 상태로 유지하고, 절대 추상화해 없애지 마십시오. 입력에 Effect/Benefit 키워드가 하나도 없으면(예: "생수, 삼다수, 에비앙" 처럼 카테고리와 브랜드명만 있는 경우), 결핍 섹션을 비워 두고 입력에 없던 효능을 지어내지 마십시오.
+5. **소스 우선순위**: 공식 사이트 > 전문 리뷰 > 사용자 리뷰 > 가격 비교 > 뉴스.
+6. **검증**: 6개월 이내 소스를 우선하고, 상충되는 내용은 교차 검증합니다.
 
-# Output Format
-## Document Structure
-- **Title**: Single H1 heading (#) — the representative category name, in {{response_language}}. No intro text.
-- **Sections**: each with an H2 heading (##), formatted as ## N. <Section title>.
+# 출력 형식
+## 문서 구조
+- **제목**: H1 제목(#) 하나 — 대표 카테고리 이름, {{response_language}}로 작성. 도입 문구 없음.
+- **섹션**: 각 섹션은 H2 제목(##)으로, ## N. <섹션 제목> 형식으로 작성.
 
-## Required Sections (in order)
-## 1. 키워드 구성 분석 (Keyword composition)
-- List EVERY input keyword with its layer label: [Category] / [Effect·Benefit] / [Super-concept] / [Other].
-- State the chosen representative category and a one-line rationale.
+## 필수 섹션 (순서대로)
+## 1. 키워드 구성 분석
+- 모든 입력 키워드를 층위 라벨과 함께 나열: [Category] / [Effect·Benefit] / [Super-concept] / [Other].
+- 선택한 대표 카테고리와 한 줄짜리 근거를 명시.
 
 ## 2. 카테고리 개요 및 선택 기준
 ## 3. 추천 제품 (3-5)
 ## 4. 기능/스펙 비교
 ## 5. 가격대
-## 6. 소비자 결핍 신호 (Consumer deficiency signals)
-- One block PER Effect/Benefit keyword.
-- For each: the felt discomfort/problem, and the everyday situation in which it surfaces.
-- Keep each keyword's signal distinct — do NOT merge them into a single generic paragraph.
-- If there are NO Effect/Benefit keywords in the input, write a single line: "효능 키워드 없음" and add nothing else. Do NOT fabricate signals.
+## 6. 소비자 결핍 신호
+- Effect/Benefit 키워드마다 하나의 블록.
+- 각 키워드에 대해: 체감하는 불편/문제, 그리고 그것이 드러나는 일상적 상황.
+- 각 키워드의 신호를 분리된 상태로 유지 — 하나의 일반적인 문단으로 병합하지 마십시오.
+- 입력에 Effect/Benefit 키워드가 하나도 없으면, "효능 키워드 없음" 한 줄만 쓰고 그 외에는 아무것도 추가하지 마십시오. 신호를 지어내지 마십시오.
 
-## Formatting Rules
-- Start with the H1 title immediately. No introductory text.
-- Only output the defined sections. No extra sections, disclaimers, or closing remarks.
-- Mark uncertain information with [unverified].
-- End immediately after the last section.
+## 서식 규칙
+- 즉시 H1 제목으로 시작. 도입 문구 없음.
+- 정의된 섹션만 출력. 추가 섹션, 면책 문구, 맺음말 없음.
+- 불확실한 정보는 [unverified]로 표시.
+- 마지막 섹션 직후 즉시 종료.
 
-## Unrecognized Input
-If and ONLY if the ENTIRE input is clearly meaningless — random characters, gibberish with no recognizable words (e.g., "dslkfjakldfj8484;;", "aaaaabbbb!!!") — output ONLY this single line and nothing else:
+## 인식 불가 입력
+입력 **전체**가 명백히 무의미한 경우 — 무작위 문자, 알아볼 수 있는 단어가 전혀 없는 뒤죽박죽 문자열(예: "dslkfjakldfj8484;;", "aaaaabbbb!!!") — 에 한해서만, 다음 한 줄만 출력하고 그 외에는 아무것도 출력하지 마십시오:
 `UNRECOGNIZED_INPUT`
-Do NOT return UNRECOGNIZED_INPUT if at least one term is a real word, brand, place, or concept.
+용어 중 하나라도 실제 단어, 브랜드, 장소, 개념이면 UNRECOGNIZED_INPUT을 반환하지 마십시오.
 
-# Research Date
-- **Research date**: {{research_date}}
+# 조사 기준일
+- **조사 기준일**: {{research_date}}
 
-# Language
-- Write EVERYTHING in **{{response_language}}**.
+# 언어
+- **{{response_language}}**로 모든 것을 작성하십시오.
 
 Input: {{product_name}}
 ```
