@@ -6,6 +6,9 @@
 
 생성된 유저 프롬프트(자연어 질문)에 대해 웹 검색을 반드시 사용해 답변을 만들고, 마크다운(## 섹션 3~5개) 구조로 반환
 
+> 할루시네이션 억제 개정(0714): 나노인텐트가 Phase 4 출력에서 제거됨에 따라 `nanoIntents` 입력 필드와 분석 컨텍스트의 Nano Intents 블록을 제거했습니다.
+> ⚠ 백엔드 정합 필요: User Prompt 조립 시 NANO_INTENT_* 주입 제거.
+
 ### 입력 변수
 
 | 필드         | 필수 | 기본값 | 설명                                                 |
@@ -13,7 +16,6 @@
 | cep          | ✅   | —      | CEP(상황) 텍스트                                     |
 | userPrompt   | ✅   | —      | 사용자 프롬프트(B)                                   |
 | aiResponse   | ✅   | —      | AI 답변 본문(C)                                      |
-| nanoIntents  |      | []     | 나노 인텐트 배열                                     |
 | kbfs         |      | []     | KBF 배열                                             |
 | contentLinks |      | []     | { url, content }[] — 자사 콘텐츠(스크래핑·편집 본문) |
 | citedSources |      | []     | AI 답변에 인용된 소스 (Source[])                     |
@@ -166,11 +168,6 @@ A를 B(사용자 프롬프트)의 인텐트 구조에 맞추기 위한 재설계
 
 ## Category Entry Point (CEP)
 {{CEP}}
-
-## Nano Intents
-1. {{NANO_INTENT_1}}
-2. {{NANO_INTENT_2}}
-3. {{NANO_INTENT_3}}
 
 ## Key Buying Factors (KBFs)
 1. {{KBF_1}}
