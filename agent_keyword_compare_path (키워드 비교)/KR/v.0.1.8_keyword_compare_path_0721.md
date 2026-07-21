@@ -240,11 +240,5 @@
 {{path_keyword_compare_csv}}
 ```
 
-{{target_prompt}}
-
-{{target_topic_prompt}}
-
-{{prev_conversation_prompt}}
-
 ##Current_question
 {{user_question}}
