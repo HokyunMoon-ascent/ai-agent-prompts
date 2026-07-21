@@ -239,8 +239,13 @@
 ## Context Data
 
 ```csv
-{{context_csv}}
+{{path_keyword_compare_csv}}
 ```
+
+## Previous Conversation
+
+User: {{prev_q}}
+Assistant: {{prev_a}}
 
 ##Current_question
 {{user_question}}
