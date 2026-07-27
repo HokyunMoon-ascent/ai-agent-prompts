@@ -1,4 +1,5 @@
 <!-- v.1.1.0_cep_EN_0710.md (updated 2026-07-10) — grounding revision: input replaced with Phase 3.5 evidence units -->
+<!-- 2026-07-21: added locale length cap on situation (EN ≤140 byte / ~140 chars advisory, byte-first). The situation in the output example above is a legacy sample longer than this cap — treat it as structure-only. -->
 
 ## Phase 4 — CEP Trigger Extraction (CEP situations, nano-intent generation) — v1.1.0 (Grounded)
 
@@ -6,7 +7,7 @@
 
 | Item        | v1.0.0 (current)                                     | v1.1.0 (this document)                                                        |
 | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Input       | Phase 3 prose markdown (`product_research_sections`) | **Phase 3.5 evidence unit JSON** (`evidence_units`)                          |
+| Input       | Phase 3 prose markdown (`product_research_sections`) | **Phase 3.5 evidence unit JSON** (injected into the same `product_research_sections` slot) |
 | Task        | Extract situations from prose (free generation)      | **Assemble scenes by selecting/combining evidence units** (no expression generated outside a unit's quote) |
 | Grounding link | `evidence` (sentence) + `section_refs` (section number) | `evidence_unit_ids` + `source_ref` + **RTB (verbatim re-quote)**          |
 | Output      | `{situation, nanoIntents×3, evidence, section_refs}` | `{situation, w7, nanoIntents×3, kbf_hints, rtb, source_ref, evidence_unit_ids}` |
@@ -30,7 +31,7 @@ Unlike v1.0.0, this is not free generation but **unit selection and combination*
 | ------------------------- | ---------------------------------------------- | ------------------ |
 | `{{product_name}}`        | Product name                                   | `버티컬 마우스`    |
 | `{{country}}`             | Country code                                    | `kr`               |
-| `{{evidence_units}}`      | **Phase 3.5 output JSON (evidence unit array)** | (JSON)             |
+| `{{product_research_sections}}`      | **Phase 3.5 output JSON (evidence unit array)** | (JSON)             |
 | `{{requested_count}}`     | Number of CEP situations to extract            | `10`               |
 | `{{category}}`            | [Optional] Product category                    | `마우스, 입력장치` |
 | `{{existing_situations}}` | [Optional] Existing CEP list (for dedup)       | (already generated list) |
@@ -79,7 +80,7 @@ You do NOT invent situations. You **assemble** CEP situations from pre-verified 
 # Evidence Units (pre-verified, verbatim-grounded)
 Each unit contains a verbatim quote from consumer research, plus the w7 fields, nano intent candidates, and KBF hints that the quote directly supports.
 
-{{evidence_units}}
+{{product_research_sections}}
 
 # CEP Definition
 
@@ -109,6 +110,11 @@ The following are FORBIDDEN:
 - **Invented action**: actions absent from the quotes (e.g., adding "다시 검색").
 If a scene feels thin, keep it thin — a sparse grounded card beats a rich fabricated one.
 
+# Length Constraint
+
+- **`situation`**: cap at **≤140 byte (UTF-8)** — byte is the hard limit; character count is advisory (~140 characters). Do NOT exceed the byte cap.
+- If evidence is sparse and `situation` becomes short, keep it short (no padding).
+
 # Prioritize Natural, Real-World Situations
 
 - Write situations that ordinary people would actually think of in their daily lives
@@ -131,6 +137,8 @@ If a scene feels thin, keep it thin — a sparse grounded card beats a rich fabr
 # Format
 
 Each situation: { "situation": "...", "w7": { ... }, "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "kbf_hints": ["..."], "rtb": "...", "source_ref": "§N", "evidence_unit_ids": [<unit_id>, ...] }
+
+- **`situation` must stay ≤140 byte (UTF-8; ~140 chars advisory).**
 
 **7W's Framework** — dimensions for the `w7` object (fill only what the units support):
 - **Why** (Need/Motivation) / **When** (Occasion/Time) / **Where** (Location/Context) / **While** (Parallel Activity) / **With Whom** (Social Context) / **With What** (Complementary Products) / **hoW Feeling** (Emotional State)

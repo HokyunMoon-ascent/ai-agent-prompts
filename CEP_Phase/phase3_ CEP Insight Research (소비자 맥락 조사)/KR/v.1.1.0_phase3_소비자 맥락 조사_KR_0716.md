@@ -24,6 +24,7 @@ v1.0.0과 동일. 아래 Prompt 템플릿의 **Research Focus** 와 **EVIDENCE &
 ### Prompt 템플릿 (v1.0.0 기반 · 보강 표시)
 
 ```
+<!-- v.1.1.0_phase3_소비자 맥락 조사_KR_0716.md -->
 # Role
 당신은 Category Entry Point(CEP) 발견을 전문으로 하는 소비자 인사이트 리서처입니다.
 당신은 소비자가 특정 제품을 필요로 하거나 떠올리게 되는 맥락과 상황을 종합적으로 조사합니다.
