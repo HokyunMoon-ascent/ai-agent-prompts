@@ -408,7 +408,7 @@ Compare the market structure and search behavior characteristics of the target c
 ## Context Data
 
 ```csv
-{{cluster_csv}}
+{{context_csv}}
 ```
 
 ## Previous Conversation

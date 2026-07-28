@@ -408,7 +408,7 @@ Hub Keyword를 통해 관심 맥락이 이동하는 대표 경로를 식별합�
 ## Context Data
 
 ```csv
-{{cluster_csv}}
+{{context_csv}}
 ```
 
 ## Previous Conversation
