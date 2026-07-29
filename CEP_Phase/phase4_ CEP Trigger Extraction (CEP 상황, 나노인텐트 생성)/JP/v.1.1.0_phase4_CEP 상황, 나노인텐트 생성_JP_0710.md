@@ -1,4 +1,5 @@
 <!-- v.1.1.0_cep_JP_0710.md (updated 2026-07-10) — grounding 改訂: 入力を Phase 3.5 の証拠ユニットに置換 -->
+<!-- 2026-07-21: situation にロケール別の長さ上限を追加（JP ≤140 byte / 参考 約70文字、byte 優先）。上の出力例の situation は本上限より長い旧サンプルであり、構造の参考としてのみ扱う。 -->
 
 ## Phase 4 — CEP Trigger Extraction (CEP 状況・nano-intent 生成) — v1.1.0 (Grounded)
 
@@ -6,7 +7,7 @@
 
 | 項目      | v1.0.0（現行）                                       | v1.1.0（本文書）                                                             |
 | --------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 入力      | Phase 3 の散文マークダウン（`product_research_sections`） | **Phase 3.5 の証拠ユニット JSON**（`evidence_units`）                        |
+| 入力      | Phase 3 の散文マークダウン（`product_research_sections`） | **Phase 3.5 の証拠ユニット JSON**（同じ `product_research_sections` スロットに注入）|
 | Task      | 散文から状況を抽出（自由生成）                        | **証拠ユニットの選択・結合によるシーン組み立て**（ユニットの quote 外の表現生成を禁止） |
 | 根拠の連結 | `evidence`（文）+ `section_refs`（セクション番号）    | `evidence_unit_ids` + `source_ref` + **RTB（verbatim の再引用）**            |
 | 出力      | `{situation, nanoIntents×3, evidence, section_refs}` | `{situation, w7, nanoIntents×3, kbf_hints, rtb, source_ref, evidence_unit_ids}` |
@@ -30,7 +31,7 @@ v1.0.0 とは異なり自由生成ではなく **ユニットの選択・結合*
 | ------------------------- | ---------------------------------------- | ------------------ |
 | `{{product_name}}`        | 製品名                                   | `버티컬 마우스`    |
 | `{{country}}`             | 国コード                                 | `kr`               |
-| `{{evidence_units}}`      | **Phase 3.5 の出力 JSON（証拠ユニット配列）** | (JSON)             |
+| `{{product_research_sections}}`      | **Phase 3.5 の出力 JSON（証拠ユニット配列）** | (JSON)             |
 | `{{requested_count}}`     | 抽出する CEP 状況の個数                  | `10`               |
 | `{{category}}`            | ［任意］製品カテゴリー                   | `마우스, 입력장치` |
 | `{{existing_situations}}` | ［任意］既存の CEP リスト（重複防止用）  | （既に生成済みのリスト） |
@@ -79,7 +80,7 @@ v1.0.0 と同一（gpt-5.4-nano・tools []・reasoning none・max_output_tokens 
 # Evidence Units（事前検証済み・verbatim 根拠付き）
 各ユニットには、消費者リサーチから取得した verbatim の引用と、その引用が直接裏付ける w7 フィールド・nano-intent 候補・KBF ヒントが含まれています。
 
-{{evidence_units}}
+{{product_research_sections}}
 
 # CEP Definition
 
@@ -109,6 +110,11 @@ CEP とは、消費者が特定の製品やサービスを必要としたり購�
 - **Invented action**: quote に存在しない行動（例: 「다시 검색」の追加）。
 シーンが乏しく感じられても、乏しいままにしてください — 根拠に乏しくても裏付けのあるカードの方が、豊かに捏造されたカードより優れています。
 
+# Length Constraint
+
+- **`situation`**: **上限 ≤140 byte（UTF-8）を厳守**（byte がハード上限）。文字数は参考（約 70 文字）。byte 上限を超えないでください。
+- 根拠が乏しく `situation` が短くなる場合は、短いままにしてください（水増し禁止）。
+
 # Prioritize Natural, Real-World Situations
 
 - 普通の人々が日常生活で実際に思い浮かべるような状況を記述してください
@@ -131,6 +137,8 @@ CEP とは、消費者が特定の製品やサービスを必要としたり購�
 # Format
 
 各状況: { "situation": "...", "w7": { ... }, "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "kbf_hints": ["..."], "rtb": "...", "source_ref": "§N", "evidence_unit_ids": [<unit_id>, ...] }
+
+- **`situation` は ≤140 byte（UTF-8, 参考 約70文字）を厳守。**
 
 **7W's Framework** — `w7` オブジェクトの次元（ユニットが裏付けるものだけを埋めてください）:
 - **Why** (必要/動機) / **When** (機会/時間) / **Where** (場所/文脈) / **While** (並行活動) / **With Whom** (社会的文脈) / **With What** (補完製品) / **hoW Feeling** (感情状態)

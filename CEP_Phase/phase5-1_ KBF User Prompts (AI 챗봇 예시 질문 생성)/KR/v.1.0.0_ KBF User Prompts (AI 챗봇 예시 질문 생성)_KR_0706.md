@@ -55,6 +55,7 @@ JSON 배열 (정확히 9개 — KBF당 3개 × 3 KBF)
 ### Prompt 템플릿
 
 ```
+<!-- v.1.0.0_ KBF User Prompts (AI 챗봇 예시 질문 생성)_KR_0706.md -->
 아래의 CEP (Category Entry Point), KBF (Key Buying Factors)를 활용해 실제 사용자가 AI 챗봇(ChatGPT, Gemini, Perplexity 등)에 물어볼 법한 자연스러운 질문을 생성하세요.
 AI 검색에서 흔히 나타나는, 구매 의도가 높은 복합형 프롬프트에 집중하세요.
 톤: 도움을 주는 친구와 대화하듯 친근하고 편안하며 다가가기 쉬운 스타일로 작성하세요.
