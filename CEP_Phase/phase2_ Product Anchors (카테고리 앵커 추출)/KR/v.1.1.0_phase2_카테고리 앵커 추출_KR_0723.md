@@ -1,7 +1,4 @@
-<!-- v.1.1.0_phase2_카테고리 앵커 추출_KR_0723.md (2026-07-23) — 베이스: v.1.0.0_..._KR_0508.md. -->
-<!-- 신규(ADDITIVE): 출력에 need_context 앵커 추가. 근거: 전수조사_구매이전CEP_차단문장_리포트(항목 1-1). 앵커가 제품 명사뿐이라 하류 검색이 '제품 명사가 등장하는 문서 = 이미 카테고리 진입자의 글'에 갇힘. 구매 이전 결핍은 제품 명사 없는 '문제 언어'로 표현되므로 구조적으로 검색 범위 밖. need_context는 카테고리를 처음 찾게 만드는 결핍·문제의 일상어를 담아 하류(Phase 3) 결핍 언어 검색 트랙의 시드로 쓰인다. -->
-<!-- ⚠ 파서 비파괴: need_context는 선택적 ADDITIVE 키. 파서/백엔드가 파싱하지 않으면 무시될 뿐 기존 category 동작은 글자 단위 불변. category 필드명·규칙 불변. -->
-<!-- ⚠ 백엔드 정합(승인 시 별도 반영): buildProductAnchorsPrompt 응답 파싱에 need_context 수용(무시 가능) + Phase 3 조립 시 {{need_context_line}}으로 전달(R2/P3 연동). 미연동 시에도 P2 단독으로 무해(need_context가 생성돼도 사용처가 없을 뿐 category 파싱 불변). -->
+<!-- v.1.1.0_phase2_카테고리 앵커 추출_KR_0723.md -->
 
 ## Phase 2 — Product Anchors (카테고리 앵커 추출) — v1.1.0 (need_context 앵커 ADDITIVE)
 

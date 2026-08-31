@@ -1,7 +1,9 @@
-<!-- v.1.0.0_cep_KR_0329.md (updated 2026-03-29) -->
-<!-- 할루시네이션 억제 개정(0714): 나노인텐트 생성 제거, 7W Coverage(Soft Quota) 섹션 제거, Grounding 제약 신설.
-     ⚠ 백엔드 정합 필요: (1) coverage_section 주입 코드 제거 (2) 출력 스키마에서 nanoIntents 파싱 제거
-     (3) task_section·evidence_section 주입 문구도 본 개정 방향(근거 기반, 나노인텐트 없음)과 정합 확인 -->
+<!-- v.1.0.1_phase4_CEP 상황 생성_KR_0831.md (updated 2026-08-31) -->
+<!-- 베이스: v.1.0.0_ CEP Trigger Extraction (CEP 상황, 나노인텐트 생성)_KR_0329.md
+     이번 개정(v.1.0.1)에서 바꾼 것은 나노인텐트 생성 제거 하나뿐입니다. 그 외 문구는 v.1.0.0 그대로입니다.
+     ⚠ 백엔드 정합 필요: (1) 출력 스키마에서 nanoIntents 파싱 제거
+     (2) Phase 5·5-1로 넘기는 cep_situations 조립 시 nanoIntents 주입 제거
+     (3) task_section·evidence_section 주입 문구에 나노인텐트 언급이 남아 있지 않은지 확인 -->
 
 ## Phase 4 — CEP Trigger Extraction (CEP 상황 생성)
 
@@ -10,7 +12,15 @@
 Product Research 결과에서 **구체적인 CEP(Category Entry Point) 상황**을 추출합니다.  
 모든 상황은 리서치 본문에 실재하는 근거로 뒷받침되어야 하며, 근거 없는 디테일 생성을 금지합니다.
 
-> 나노인텐트(Nano Intent) 생성은 Web Search 근거에 기반하지 않는 결과물이므로 본 개정에서 제거되었습니다.
+> 나노인텐트(Nano Intent) 생성은 Web Search 근거에 기반하지 않는 결과물이므로 제거되었습니다.
+> v.1.0.0 문서는 머리말에서 제거를 선언해 놓고 템플릿에는 `nanoIntents` 출력이 그대로 남아 있었습니다. v.1.0.1은 그 모순을 없앤 판본입니다.
+
+### 개정 이력
+
+| 버전    | 날짜  | 변경                                                                                             |
+| ------- | ----- | ------------------------------------------------------------------------------------------------ |
+| v.1.0.1 | 08-31 | 템플릿에서 `nanoIntents` 출력 필드·Nano Intent 생성 지시·Why→nanoIntents 매핑 삭제. 그 외 무변경 |
+| v.1.0.0 | 03-29 | 최초 판본                                                                                        |
 
 ### 핵심 개념
 
@@ -20,6 +30,8 @@ Product Research 결과에서 **구체적인 CEP(Category Entry Point) 상황**�
 - **4대 환각 유형 금지**: ① 시간 단정(Time assertion) ② 없는 장소(Invented place) ③ 가짜 인용(Fake quotation) ④ 없는 행동(Invented action)
 
 ### 입력 변수
+
+v.1.0.0과 동일합니다. **신규 변수 0개 · 삭제 변수 0개** — 백엔드 주입 코드를 고치지 않아도 됩니다.
 
 | 변수                            | 설명                               | 예시               |
 | ------------------------------- | ---------------------------------- | ------------------ |
@@ -44,6 +56,8 @@ JSON 배열 (정확히 `{{requested_count}}`개)
 ]
 ```
 
+`nanoIntents` 키는 반환하지 않습니다.
+
 ### 요청 모델 및 파라미터
 
 | 파라미터          | 설정값                                                              | 비고                               |
@@ -62,6 +76,7 @@ JSON 배열 (정확히 `{{requested_count}}`개)
 ### Prompt 템플릿
 
 ````
+<!-- v.1.0.1_phase4_CEP 상황 생성_KR_0831.md (updated 2026-08-31) -->
 # Role
 You are a consumer behavior analyst specializing in Category Entry Point (CEP) identification.
 Your expertise is in uncovering the real-life situations, triggers, and contexts that lead consumers to think of or need a specific product category.
@@ -101,12 +116,13 @@ CEP refers to a specific situation, context, or cue that makes consumers need or
 
 # Format
 
-Each situation: { "situation": "...", "nanoIntents": ["<intention1>", "<intention2>", "<intention3>"], "evidence": "...", "section_refs": [<section_number>, ...] }
+Each situation: { "situation": "...", "evidence": "...", "section_refs": [<section_number>, ...] }
 
 - **section_refs**: The section_number values from the Product Research Results that directly support this CEP situation. Include 1-3 section numbers. If no specific section applies, use an empty array [].
+- Return exactly these three keys. Do NOT add any other key.
 
 **7W's Framework** — Use these 7 dimensions as inspiration for diverse CEP situations:
-- **Why** (Need/Motivation): The core reason or problem-solving need → Expressed as nanoIntents
+- **Why** (Need/Motivation): The core reason or problem-solving need that makes the consumer recall the category
 - **When** (Occasion/Time): The timing or specific occasion that triggers category recall
 - **Where** (Location/Context): Where the consumer is, or where they are using the product
 - **While** (Parallel Activity): What else the consumer is doing at the same time
@@ -114,10 +130,7 @@ Each situation: { "situation": "...", "nanoIntents": ["<intention1>", "<intentio
 - **With What** (Complementary Products): Other products or services paired with this category
 - **hoW Feeling** (Emotional State): The consumer's mood or desired emotional state
 
-**Nano Intent (nanoIntents array, exactly 3 items)**: Concrete purposes that differ per consumer within the same CEP (= Why dimension).
-- Do NOT repeat product name or category
-- Avoid generic phrases like "need it", "ran out of it"
-- Output exactly 3 nanoIntents per situation
+**Do NOT generate nano-intents.** Do NOT output a "nanoIntents" key, and do NOT write the consumer's purpose as a separate list. The Why dimension is expressed inside the situation sentence itself, grounded in the Product Research Results.
 
 {{evidence_section}}
 
@@ -138,5 +151,6 @@ The top-level JSON array length must be exactly {{requested_count}}.
 - Do NOT add any prose, explanation, headings, or bullet/numbered lists outside JSON.
 - Do NOT add trailing commas.
 - Use double quotes for ALL JSON keys and string values.
+- Each object has exactly three keys: "situation", "evidence", "section_refs".
 - Top-level JSON MUST be an array of length exactly {{requested_count}}.
 ````
